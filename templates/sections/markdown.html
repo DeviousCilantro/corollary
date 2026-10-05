@@ -1,0 +1,12 @@
+{#- Free-form section. In content/site.toml:
+
+      [[sections]]
+      kind = "markdown"
+      title = "Students"
+      body = """
+      I co-supervise [Sam Lee](https://example.org) (PhD, 2025–).
+      """
+-#}
+{%- if section.body %}
+<div class="prose">{{ section.body | markdown | safe }}</div>
+{%- endif %}

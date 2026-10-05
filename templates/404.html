@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Page not found &middot; {{ data.person.name }}{% endblock title %}
+{% block canonical_path %}/404.html{% endblock canonical_path %}
+{% block content %}
+<article class="paper not-found">
+  <header class="masthead">
+    <h1 class="title">Page not found</h1>
+  </header>
+  <div class="prose">
+    <p>There is nothing at this address. Everything on this site is on <a href="{{ "/" | url }}">the homepage</a>.</p>
+  </div>
+</article>
+{% endblock content %}

@@ -1,0 +1,18 @@
+[package]
+name = "sitegen"
+version = "1.0.0"
+description = "Corollary: builds an academic homepage from one TOML file"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+anyhow = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+pulldown-cmark = { version = "0.12", default-features = false, features = ["html"] }
+pulldown-latex = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tera = "1"
+toml = "0.8"
+walkdir = "2"

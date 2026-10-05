@@ -1,0 +1,23 @@
+/* ===========================================================================
+   custom.css — your own additions, loaded after theme.css and site.css.
+
+   Anything here wins over the defaults without editing them, which keeps
+   pulling in later template updates painless. Delete this file entirely if you
+   do not use it; the page stops requesting it.
+
+   A few things to try:
+
+   A square portrait (the second line stops the text following a curve):
+     :root { --portrait-radius: 2px; --portrait-shape: none; }
+
+
+   Underline prose links instead of the highlighter wash:
+     .prose a { background-image: none; text-decoration: underline; }
+
+   Sharp-cornered portrait:
+     :root { --portrait-radius: 0; }
+
+   Style one section alone (every section has class "section-<kind>" and the
+   id from content/site.toml):
+     #awards .entry-title { font-style: italic; }
+   =========================================================================== */

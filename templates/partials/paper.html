@@ -1,0 +1,54 @@
+{#- One publication, shared by the Publications and Manuscripts sections.
+    Macros cannot see the surrounding context, so the switches they need are
+    passed in as arguments. -#}
+{% macro entry(item, highlight_self=false) %}
+<li class="entry pub pub-{{ item.status }}" id="{{ item.id }}">
+    <h3 class="entry-title">{{ item.title_html | safe }}</h3>
+    <p class="entry-authors">
+      {%- for author in item.authors -%}
+      {%- if author.is_self and highlight_self %}<strong class="self">{{ author.name }}</strong>
+      {%- elif author.url %}<a href="{{ author.url }}">{{ author.name }}</a>
+      {%- else %}{{ author.name }}{% endif -%}
+      {%- if not loop.last %}, {% endif -%}
+      {%- endfor -%}
+    </p>
+    <div class="entry-meta pub-meta">
+      {#- The venue and its note are one item, so "(to appear)" never wraps
+          away from the venue it qualifies. -#}
+      <span class="pub-venue">
+        {%- if item.venue_url %}<a href="{{ item.venue_url | url }}">{{ item.venue_primary }}</a>
+        {%- else %}{{ item.venue_primary }}{% endif -%}
+        {%- if item.venue_note %} <span class="pub-note">({{ item.venue_note }})</span>{% endif -%}
+      </span>
+      {#- eprint, arxiv and doi are expanded by the generator, and `links`
+          carries anything else. The separators between them are drawn by the
+          stylesheet, which hides any that would open a line. -#}
+      {{- self::link_run(links=item.links) }}
+      {%- if item.bibtex %}
+      <details class="bibtex">
+        <summary>BibTeX</summary>
+        <div class="bibtex-body">
+          <pre id="bib-{{ item.id }}"><code>{{ item.bibtex }}</code></pre>
+          <button class="ghost-button" type="button"
+                  data-copy-target="#bib-{{ item.id }}" data-copy-done="copied"
+                  aria-label="Copy BibTeX entry">copy</button>
+        </div>
+      </details>
+      {%- endif %}
+    </div>
+    {%- if item.abstract_html %}
+    <details class="abstract">
+      <summary>Abstract</summary>
+      <div class="prose">{{ item.abstract_html | safe }}</div>
+    </details>
+    {%- endif %}
+</li>
+{% endmacro entry %}
+
+{#- A run of links for a meta line. The separators between items ("· slides
+    · video") are drawn by the stylesheet, not written here. -#}
+{% macro link_run(links) %}
+{%- for link in links %}
+<a href="{{ link.url | url }}">{{ link.label }}</a>
+{%- endfor %}
+{% endmacro link_run %}

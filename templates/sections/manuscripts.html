@@ -1,0 +1,11 @@
+{%- import "partials/paper.html" as paper -%}
+{#- Entries from [[publications]] with status "submission" or "inpreparation".
+    Rendered only when there are any. -#}
+{%- if data.manuscripts | length > 0 %}
+{%- if data.authors_alphabetical and data.author_order_note != "" and data.publications | length == 0 %}
+<p class="convention">{{ data.author_order_note | safe }}</p>
+{%- endif %}
+<ol class="entries">
+  {%- for item in data.manuscripts %}{{ paper::entry(item=item, highlight_self=data.highlight_self) }}{% endfor %}
+</ol>
+{%- endif %}

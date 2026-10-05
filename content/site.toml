@@ -1,0 +1,256 @@
+# =============================================================================
+#  content/site.toml — the entire site is generated from this one file.
+#
+#  Everything below is EXAMPLE CONTENT for a fictional researcher. Replace it
+#  with your own, run ./scripts/serve.sh, and look at http://localhost:8000.
+#
+#  The full reference for every field is docs/CONFIGURATION.md.
+#  Markdown works in every long-text field; so does LaTeX: \( x^2 \), $$ … $$.
+#  Note that in "basic" TOML strings a backslash must be doubled (\\( x \\)),
+#  or use a literal string with single quotes: '''\( x \)'''.
+# =============================================================================
+
+[site]
+# Where the site will live. Leave this commented out to deploy on GitHub Pages:
+# the workflow fills in the right address (including a /repository-name/
+# subpath) by itself. Set it when you use a custom domain.
+# base_url = "https://alice.example.org"
+title = "Alice Archer"
+description = "Alice Archer, PhD student in theoretical computer science at the University of Example."
+lang = "en"
+# Optional Markdown appended to the footer.
+# footer = "Last updated October 2026."
+# The small "Built with Corollary" line in the footer. Optional; keeping it
+# is how other theorists find the template.
+credit = true
+
+# -----------------------------------------------------------------------------
+#  Identity — the title block at the top.
+# -----------------------------------------------------------------------------
+
+[person]
+name = "Alice Archer"                   # must match your spelling in `authors`
+role = "PhD student"
+institution = "University of Example"
+institution_url = "https://www.example.edu/"
+email = "alice@example.edu"          # optional; remove to hide the contact line
+photo_path = "/assets/img/portrait.svg" # optional; a square JPEG or PNG is best
+photo_alt = "Portrait of Alice Archer"
+# photo_caption = "Photo: A. Photographer"   # optional, e.g. a credit
+# Listed under the email, and declared to search engines as the same person.
+links = [
+  { label = "Google Scholar", url = "https://scholar.google.com/" },
+  { label = "DBLP", url = "https://dblp.org/" },
+  { label = "ORCID", url = "https://orcid.org/" },
+  { label = "GitHub", url = "https://github.com/" },
+  # A file in static/ is linked with a root-relative path:
+  # { label = "CV", url = "/assets/files/cv.pdf" },
+]
+
+[about]
+intro = """
+I am a second-year PhD student in the [Theory Group](https://www.example.edu/theory) at the [University of Example](https://www.example.edu/), advised by [Carol Chen](https://example.org/carol-chen). Before that, I completed a BSc in Mathematics at [Example College](https://www.example.edu/college).
+
+I work on the foundations of cryptography — in particular on assumptions such as the hardness of factoring \\( N = pq \\) — and on theoretical computer science more broadly.
+"""
+# Structured data only; never shown on the page.
+keywords = ["Cryptography", "Theoretical computer science"]
+
+# -----------------------------------------------------------------------------
+#  Optional switches. All of these tables may be deleted; defaults are shown.
+# -----------------------------------------------------------------------------
+
+[conventions]
+# A note printed above the paper lists, but only while every multi-author
+# paper really is in alphabetical order — so it can never become false.
+author_order = "Authors are listed alphabetically."
+# Set your own name in bold in author lists.
+highlight_self = false
+
+[bibtex]
+enabled = true
+key_style = "initials"      # "initials" (ABD26) or "surname-year" (archer2026)
+
+[features]
+theme_toggle = true         # the light/dark switch in the top corner
+
+# Colour overrides. Any custom property from static/assets/css/theme.css can be
+# named here, without the leading dashes. The default is ink-blue on ivory with
+# a yellow highlighter; uncomment to try a referee's red pen instead, with a
+# pale wash where the highlighter was:
+# [theme]
+# light = { accent = "#9b2226", accent-hover = "#b23a3e", highlight = "#f4c7c3", link-wash = "rgba(155, 34, 38, 0.10)", link-wash-hover = "rgba(155, 34, 38, 0.18)", accent-quiet = "#f4dcda" }
+# dark  = { accent = "#f0a3a0", accent-hover = "#f6c0be", link-wash = "rgba(240, 163, 160, 0.16)", link-wash-hover = "rgba(240, 163, 160, 0.28)", accent-quiet = "#3a2424" }
+
+# Words the generator writes for you, if you would rather they said something
+# else (or were in another language).
+# [labels]
+# preprint = "Preprint"
+# submission = "In submission"
+# in_preparation = "In preparation"
+
+# -----------------------------------------------------------------------------
+#  Page layout: which sections appear, and in what order.
+#
+#  Delete this whole block to get the default: about, publications,
+#  manuscripts, talks, teaching, service. A section with nothing in it is left
+#  off the page automatically. `title` overrides a heading ("" hides it).
+#
+#  `kind` selects templates/sections/<kind>.html. Built in: about,
+#  publications, manuscripts, talks, teaching, service, list, markdown.
+#  Add your own by creating a new template — see docs/CUSTOMIZING.md.
+# -----------------------------------------------------------------------------
+
+[[sections]]
+kind = "about"
+
+[[sections]]
+kind = "publications"
+
+[[sections]]
+kind = "manuscripts"
+
+[[sections]]
+kind = "talks"
+
+[[sections]]
+kind = "teaching"
+
+# A generic list: awards, grants, students, software, news …
+[[sections]]
+kind = "list"
+id = "awards"
+title = "Awards"
+
+[[sections.items]]
+title = "Best Student Paper Award"
+meta = "Example Conference on Cryptography"
+meta_url = "https://example.org/"
+date = "2026"
+text = "For *Short Signatures from Imaginary Assumptions*."
+
+[[sections.items]]
+title = "Graduate Fellowship"
+meta = "Example Foundation"
+date = "2025–2028"
+
+[[sections]]
+kind = "service"
+
+# Free-form Markdown.
+[[sections]]
+kind = "markdown"
+title = "Misc"
+body = """
+Outside research I run the department's reading group on [lattices](https://example.org/reading-group). Eve attends every week; we have stopped asking why.
+"""
+
+# -----------------------------------------------------------------------------
+#  Coauthor homepages. Write a URL here once and every paper naming that person
+#  links to it. Names must match `authors` exactly. Your own name is never
+#  linked: a self-link on your own homepage is noise.
+# -----------------------------------------------------------------------------
+
+[people]
+"Carol Chen" = "https://example.org/carol-chen"
+"Bob Baird" = "https://example.org/bob-baird"
+"Dave Dunmore" = "https://example.org/dave-dunmore"
+
+# =============================================================================
+#  PUBLICATIONS AND MANUSCRIPTS
+#
+#  `status` decides the section a paper lands in:
+#    accepted, preprint          -> Publications
+#    submission, inpreparation   -> Manuscripts (hidden while empty)
+#
+#  Order does not matter: entries sort themselves, newest year first and then
+#  accepted > preprint > submission > in preparation.
+#
+#  Required   title, authors, year
+#  status     "accepted" | "preprint" | "submission" (default) | "inpreparation"
+#  venue      short venue name; required when accepted, e.g. "CRYPTO"
+#  venue_url  links the venue
+#  note       parenthetical after the venue, e.g. "to appear"
+#  eprint     IACR ePrint id "2026/0123"          -> link + BibTeX
+#  arxiv      arXiv id "2601.01234"               -> link + BibTeX
+#  doi        "10.1007/…"                         -> link + BibTeX field
+#  links      anything else: [{ label = "slides", url = "/assets/files/x.pdf" }]
+#  abstract   behind a fold; Markdown and LaTeX
+#  bibtex_key override the generated citation key
+#  bibtex     a complete entry, used verbatim instead of the generated one
+# =============================================================================
+
+[[publications]]
+title = "Short Signatures from Imaginary Assumptions"
+authors = ["Alice Archer", "Bob Baird", "Dave Dunmore"]
+status = "accepted"
+venue = "EXAMPLECRYPT"
+venue_url = "https://example.org/"
+year = 2026
+note = "to appear"
+links = [{ label = "pdf", url = "https://example.org/paper.pdf" }]
+abstract = """
+We construct signatures of size \\( O(\\lambda) \\) from an assumption we made up for this example. Abstracts accept *Markdown* and LaTeX:
+
+$$ \\Pr[\\mathsf{Forge}] \\le \\frac{q^2}{2^\\lambda} $$
+"""
+# eprint = "2026/0123"   # once posted: adds a link and rewrites the BibTeX entry
+# doi = "10.1007/…"      # once in the proceedings
+
+[[publications]]
+title = "A Note on Example Constructions"
+authors = ["Alice Archer", "Carol Chen"]
+status = "preprint"
+year = 2025
+links = [{ label = "pdf", url = "https://example.org/note.pdf" }]
+
+[[publications]]
+title = "Lower Bounds for Things We Have Not Proved Yet"
+authors = ["Alice Archer", "Bob Baird"]
+status = "submission"
+year = 2026
+
+# =============================================================================
+#  TALKS — listed in the order written. `text` is optional.
+# =============================================================================
+
+[[talks]]
+title = "Short Signatures from Imaginary Assumptions"
+venue = "Example University Theory Seminar"
+venue_url = "https://www.example.edu/theory/seminar"
+date = "Jun 2026"
+links = [{ label = "slides", url = "https://example.org/slides.pdf" }]
+
+[[talks]]
+title = "An Introduction to Zero-Knowledge Proofs"
+venue = "Student reading group"
+date = "Oct 2025"
+
+# =============================================================================
+#  TEACHING
+# =============================================================================
+
+[[teaching]]
+role = "Teaching assistant"
+institution = "University of Example"
+institution_url = "https://www.example.edu/"
+term = "Autumn 2026"
+text = "Introduction to Cryptography."
+
+[[teaching]]
+role = "Teaching assistant"
+institution = "University of Example"
+term = "Spring 2026"
+text = "Algorithms and Data Structures."
+
+# =============================================================================
+#  SERVICE — one row per role, its venues after it, sorted newest year first
+#  (within a year, in the order written).
+# =============================================================================
+
+[[service]]
+role = "Subreviewer"
+venues = [
+  { name = "EXAMPLECRYPT", year = 2026, url = "https://example.org/" },
+  { name = "TCC-Example", year = 2025 },
+]

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If Corollary helped you, a link back is the nicest thanks. If you must cite it, cite it as below."
+title: "Corollary: a homepage for theorists"
+type: software
+authors:
+  - alias: DeviousCilantro
+repository-code: "https://github.com/DeviousCilantro/corollary"
+license: MIT
+version: 1.0.0
+date-released: 2026-10-04
+keywords:
+  - academic homepage
+  - static site generator
+  - theoretical computer science
+  - cryptography
+  - Rust

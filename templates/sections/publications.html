@@ -1,0 +1,10 @@
+{%- import "partials/paper.html" as paper -%}
+{#- Accepted and preprint entries from [[publications]]. -#}
+{%- if data.publications | length > 0 %}
+{%- if data.authors_alphabetical and data.author_order_note != "" %}
+<p class="convention">{{ data.author_order_note | safe }}</p>
+{%- endif %}
+<ol class="entries">
+  {%- for item in data.publications %}{{ paper::entry(item=item, highlight_self=data.highlight_self) }}{% endfor %}
+</ol>
+{%- endif %}

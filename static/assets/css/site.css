@@ -1,0 +1,855 @@
+/* ===========================================================================
+   site.css — layout.
+
+   One column, the width of a printed text block, with everything hung from a
+   single left edge: the name as the title, the introduction wrapping around a
+   round portrait,
+   sections under small-caps heads with a hairline running out to the right
+   margin, and a short footer.
+
+   One text face, Literata, with a monospace kept for BibTeX and the copy
+   buttons. No cards, no shadows, no icons beyond the theme switch: structure
+   is carried by type and whitespace alone.
+
+   Colours, fonts and widths are custom properties defined in theme.css. For
+   small additions, prefer static/assets/css/custom.css, which loads last.
+
+   Every section is wrapped as <section id="…" class="section section-<kind>">,
+   so one section can be styled alone, e.g. `.section-service { … }`.
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--serif);
+  /* Relative, never absolute, so a reader who has raised their browser's text
+     size is obeyed: 17px for anyone who has not. On large screens the type
+     grows with the window, to 20px, so the column keeps the proportion of a
+     printed page instead of shrinking into a strip between two empty
+     margins. Every length on the page is in rem, so the whole composition
+     scales together. */
+  font-size: clamp(106.25%, 62.5% + 0.55vw, 125%);
+  line-height: 1.62;
+  /* Safari on iOS otherwise resizes body text of its own accord whenever a
+     block's width changes, e.g. when a BibTeX disclosure opens. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  color: var(--body);
+  background: var(--paper);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Old-style figures: a year in running prose is a word, not a measurement,
+     and lining figures stand at cap height and shout it across the line. Code
+     is exempt below — a BibTeX year wants to line up. */
+  font-variant-numeric: oldstyle-nums;
+  /* Quotation marks hang outside the column where the browser allows it
+     (Safari), so the left edge reads as a straight line. */
+  hanging-punctuation: first;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--paper);
+  display: flex;
+  flex-direction: column;
+}
+
+::selection {
+  background: var(--accent-quiet);
+  color: var(--ink);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 500;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 38%, transparent);
+  text-decoration-thickness: 0.055em;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-decoration-color: currentColor;
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+code,
+pre {
+  font-family: var(--mono);
+  font-size: 0.84em;
+  font-variant-numeric: normal;
+}
+
+/* Mathematics is MathML emitted by the Rust build; no engine runs in the page. */
+math {
+  font-family: var(--serif);
+  font-size: 1.06em;
+}
+
+/* `block math`, not `block`: plain block layout would lay the equation's
+   parts out as a stack of boxes (Chromium does exactly that). A browser that
+   does not know the value keeps its own default, which is already right. */
+math[display="block"] {
+  display: block math;
+  overflow-x: auto;
+  margin: 1.1rem 0;
+}
+
+/* An expression that did not parse is shown as the TeX that was written. */
+.math-error {
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+
+/* Footnotes, from Markdown's [^1]: a short rule, then small type. */
+.footnote-reference a {
+  background: none;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.footnote-definition {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+  font-size: 0.84rem;
+  color: var(--muted);
+  text-indent: 0;
+}
+
+:not(.footnote-definition) + .footnote-definition {
+  margin-top: 1.1rem;
+  padding-top: 0.55rem;
+  background: linear-gradient(var(--rule-strong), var(--rule-strong)) top left / 4rem 1px no-repeat;
+}
+
+.footnote-definition p {
+  margin: 0;
+}
+
+/* Long identifiers wrap rather than widening the column. */
+.prose,
+.entry,
+.contact {
+  overflow-wrap: break-word;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.6rem 0.9rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  color: var(--ink);
+}
+
+.skip-link:focus {
+  left: 0.75rem;
+  top: 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   The column. Header, page and footer share one measure.
+   --------------------------------------------------------------------------- */
+
+.running-head,
+.paper,
+.site-footer {
+  width: min(var(--measure), calc(100% - 2 * var(--gutter)));
+  margin-inline: auto;
+}
+
+main {
+  flex: 1;
+}
+
+/* Arriving by a section anchor, the target lands with room above it. */
+.section,
+#content {
+  scroll-margin-top: 2.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+   The top of the page: the theme switch, alone in the corner.
+   --------------------------------------------------------------------------- */
+
+.running-head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 2.2rem;
+  padding-top: 1.35rem;
+  color: var(--muted);
+}
+
+.theme-toggle {
+  flex: none;
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0.15rem 0.1rem 0.15rem 0.3rem;
+  cursor: pointer;
+  color: var(--muted);
+  line-height: 1;
+
+  /* The button offers the theme you are not in: a moon on the light page, a
+     sun on the dark one. Drawn as masks rather than the ☾ and ☼ glyphs, which
+     have wildly different optical sizes in most fonts. Pure CSS, so the right
+     icon is there on the first frame. */
+  --icon-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2z'/%3E%3C/svg%3E");
+  --icon-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4.4'/%3E%3Cpath d='M12 1.9v2.4M12 19.7v2.4M4.8 4.8l1.7 1.7M17.5 17.5l1.7 1.7M1.9 12h2.4M19.7 12h2.4M4.8 19.2l1.7-1.7M17.5 6.5l1.7-1.7'/%3E%3C/svg%3E");
+  --theme-icon: var(--icon-moon);
+}
+
+.theme-toggle::before {
+  content: "";
+  display: block;
+  width: 1.05rem;
+  height: 1.05rem;
+  background: currentColor;
+  -webkit-mask: var(--theme-icon) center / contain no-repeat;
+  mask: var(--theme-icon) center / contain no-repeat;
+}
+
+html[data-theme="dark"] .theme-toggle {
+  --theme-icon: var(--icon-sun);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .theme-toggle {
+    --theme-icon: var(--icon-sun);
+  }
+}
+
+/* Masks are the one thing here a browser could fail to support. If it does,
+   the button falls back to the glyphs rather than going blank. */
+@supports not ((mask-image: none) or (-webkit-mask-image: none)) {
+  .theme-toggle::before {
+    width: auto;
+    height: auto;
+    background: none;
+    font-size: 1.2rem;
+    content: "\263E";
+  }
+
+  html[data-theme="dark"] .theme-toggle::before {
+    content: "\263C";
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) .theme-toggle::before {
+      content: "\263C";
+    }
+  }
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Title block
+   --------------------------------------------------------------------------- */
+
+.masthead {
+  padding: 2.6rem 0 2.1rem;
+}
+
+.title {
+  font-size: clamp(2rem, 1.45rem + 2.2vw, 2.6rem);
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  line-height: 1.1;
+  overflow-wrap: break-word;
+}
+
+.contact {
+  margin-top: 0.85rem;
+  font-size: 0.92rem;
+  color: var(--body);
+}
+
+.contact a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 28%, transparent);
+}
+
+.contact a:hover {
+  color: var(--accent);
+}
+
+/* The address on one line, the profiles on the next. */
+.contact-email {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+}
+
+/* A long address breaks where it must rather than running off a phone. */
+.email {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.contact-links {
+  margin-top: 0.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0;
+}
+
+.contact-links a + a::before {
+  content: "\00B7";
+  display: inline-block;
+  margin: 0 0.6rem;
+  color: var(--muted);
+  opacity: 0.6;
+  /* The dot is not part of the link: no underline, no click target. */
+  text-decoration: none;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Introduction, with the portrait beside it
+   --------------------------------------------------------------------------- */
+
+.intro-block {
+  display: flow-root;
+}
+
+.portrait-figure {
+  float: right;
+  width: var(--portrait-size);
+  margin: 0.35rem 0 0.8rem 1.6rem;
+}
+
+/* The text follows the curve of a round portrait rather than the square box
+   around it. Tied to a token, so a square portrait (see theme.css) switches
+   it off, and never applied under a caption, which would distort the shape. */
+.portrait-figure:not(.has-caption) {
+  shape-outside: var(--portrait-shape);
+  shape-margin: 1.1rem;
+}
+
+.portrait {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--portrait-radius);
+  background: var(--paper-raised);
+  /* A hairline frame, and colour held a little back, so the photograph sits
+     in the page rather than on it. */
+  box-shadow: 0 0 0 1px var(--rule);
+  filter: var(--portrait-filter);
+}
+
+.portrait-figure figcaption {
+  margin-top: 0.45rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  font-style: italic;
+  color: var(--muted);
+  text-align: center;
+}
+
+.intro p + p {
+  margin-top: 0.8rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Prose links: a stroke of highlighter by day, yellow chalk by night
+   --------------------------------------------------------------------------- */
+
+.prose a {
+  font-weight: 500;
+  text-decoration: none;
+  background-image: var(--link-mark), var(--link-sweep);
+  background-size: 100% 100%, 0% 100%;
+  background-repeat: no-repeat;
+  border-radius: 0.09em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* On hover a second, stronger stroke is drawn across the word, left to right. */
+.prose a:hover,
+.prose a:focus-visible {
+  background-size: 100% 100%, 100% 100%;
+  text-decoration-line: var(--link-hover-line);
+  text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Sections, under small-caps heads with a hairline running out to the right
+   margin: a journal's running-head device, which carries the eye across the
+   column so its right side never reads as empty.
+   --------------------------------------------------------------------------- */
+
+.section {
+  margin-top: 2.9rem;
+}
+
+.masthead + .section {
+  margin-top: 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.4rem;
+  font-size: 1.06rem;
+  font-weight: 500;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+}
+
+.section-title::after {
+  content: "";
+  flex: 1 1 auto;
+  border-top: 1px solid var(--rule);
+}
+
+/* The authorship note, when [conventions] author_order is set. */
+.convention {
+  margin: -0.3rem 0 1.4rem;
+  font-size: 0.92rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Entries: papers, talks, teaching, generic lists
+   --------------------------------------------------------------------------- */
+
+.entries {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.entries-compact {
+  gap: 0.75rem;
+}
+
+/* Grid items default to `min-width: auto`, so an open BibTeX entry wider than
+   a phone would stretch the track and scroll the whole page sideways. */
+.entries > li {
+  min-width: 0;
+}
+
+.entry-title {
+  font-size: 1.06rem;
+  line-height: 1.32;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.entry-authors,
+.entry-text {
+  margin-top: 0.3rem;
+}
+
+/* The meta line: venue, date, then actions, each after a medial dot. The dots
+   are drawn in the gap to the left of each item and the line clips its own
+   left edge, so an item that wraps to the start of a line loses its dot
+   instead of opening the line with it. The padding keeps focus rings clear of
+   the clip. */
+.entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1.3rem;
+  row-gap: 0.05rem;
+  overflow: hidden;
+  padding: 4px;
+  margin: calc(0.3rem - 4px) -4px -4px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.entry-meta > :not(:first-child),
+.pub-meta > .bibtex > summary {
+  position: relative;
+}
+
+.entry-meta > :not(:first-child):not(details)::before,
+.pub-meta > .bibtex > summary::before {
+  content: "\00B7";
+  position: absolute;
+  left: -0.82rem;
+  color: var(--muted);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Coauthors, venues and institutions are quiet: they inherit the colour of
+   their line, so the eye is not pulled through the list. Actions — ePrint,
+   slides, BibTeX — keep the accent. */
+.entry-authors a,
+.entry-where a,
+.pub-venue a,
+.service-venues a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 24%, transparent);
+}
+
+.entry-authors a:hover,
+.entry-where a:hover,
+.pub-venue a:hover,
+.service-venues a:hover {
+  color: var(--accent);
+}
+
+.entry-meta > a {
+  color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 34%, transparent);
+}
+
+.pub-venue {
+  font-style: italic;
+  color: var(--ink);
+}
+
+.entry-date {
+  white-space: nowrap;
+}
+
+.pub-note {
+  font-style: normal;
+  color: var(--muted);
+}
+
+/* Your own name, when [conventions] highlight_self = true. */
+.entry-authors .self {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Service: the role, then its venues beside it. */
+.service-entry {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  column-gap: 1.2rem;
+  align-items: baseline;
+}
+
+.service-role {
+  color: var(--ink);
+}
+
+.service-venues {
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Disclosures: abstract and BibTeX
+   --------------------------------------------------------------------------- */
+
+summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--accent);
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary::after {
+  content: " +";
+  font-family: var(--mono);
+  font-size: 0.82em;
+  opacity: 0.7;
+}
+
+details[open] > summary::after {
+  content: " \2212";
+}
+
+summary:hover {
+  color: var(--accent-hover);
+}
+
+.bibtex {
+  font-size: 0.95rem;
+}
+
+/* Opening the disclosure must not move its label. Were the <details> itself
+   to claim a full row, "BibTeX" would jump to the start of a new line. Instead
+   the box dissolves into the meta line, so the label stays where it was, and
+   only the entry claims a row of its own beneath. */
+.pub-meta > .bibtex[open] {
+  display: contents;
+}
+
+/* Separate rule: a browser that does not know ::details-content would drop a
+   whole selector list containing it, the line above included. */
+.pub-meta > .bibtex[open]::details-content {
+  display: contents;
+}
+
+.pub-meta > .bibtex[open] > .bibtex-body {
+  flex: 1 0 100%;
+  /* A flex item will not shrink below its content by default, and a BibTeX
+     entry is wider than a phone; the entry scrolls inside its own box instead. */
+  min-width: 0;
+}
+
+.bibtex-body {
+  position: relative;
+  margin-top: 0.45rem;
+}
+
+.bibtex-body pre {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  color: var(--body);
+  line-height: 1.5;
+}
+
+.bibtex-body .ghost-button {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+}
+
+.abstract {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.abstract > .prose {
+  margin-top: 0.55rem;
+  padding-left: 0.95rem;
+  border-left: 1px solid var(--rule-strong);
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Controls
+   --------------------------------------------------------------------------- */
+
+.ghost-button {
+  appearance: none;
+  cursor: pointer;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--paper-raised);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.ghost-button:hover {
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+
+.ghost-button[data-copied] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------------- */
+
+.site-footer {
+  margin-top: 3.2rem;
+  padding: 1rem 0 2.4rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.3rem 1rem;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.site-footer a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+/* ---------------------------------------------------------------------------
+   Not found
+   --------------------------------------------------------------------------- */
+
+.not-found .masthead {
+  padding-bottom: 2rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Narrow screens
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 34rem) {
+  :root {
+    --gutter: 1.15rem;
+  }
+
+  html {
+    font-size: 100%;
+  }
+
+  .masthead {
+    padding: 2.2rem 0 1.9rem;
+  }
+
+  .portrait-figure {
+    width: 6.75rem;
+    margin-left: 1.1rem;
+  }
+
+  .portrait-figure:not(.has-caption) {
+    shape-margin: 0.8rem;
+  }
+
+  /* A wrapped line would open on a stranded dot; on a phone the profiles
+     are simply spaced apart. */
+  .contact-links {
+    column-gap: 1.1rem;
+  }
+
+  .contact-links a + a::before {
+    content: none;
+  }
+
+  .service-entry {
+    grid-template-columns: 1fr;
+    row-gap: 0.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a,
+  summary,
+  .ghost-button,
+  .theme-toggle {
+    transition: color 130ms ease, border-color 130ms ease,
+      text-decoration-color 130ms ease;
+  }
+
+  .prose a {
+    transition: background-size 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      color 130ms ease;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Print
+   --------------------------------------------------------------------------- */
+
+@media print {
+  .skip-link,
+  .theme-toggle,
+  .ghost-button,
+  .abstract,
+  .bibtex {
+    display: none;
+  }
+
+  html {
+    font-size: 10.5pt;
+    background: #fff;
+    color: #000;
+  }
+
+  .running-head,
+  .paper,
+  .site-footer {
+    width: auto;
+  }
+
+  /* No spare margin on paper for the separator clip to borrow. */
+  .entry-meta {
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .entry,
+  .section-title {
+    break-inside: avoid;
+  }
+
+  .section-title {
+    break-after: avoid;
+  }
+
+  .prose a {
+    background: none;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+}

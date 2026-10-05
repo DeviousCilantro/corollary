@@ -1,0 +1,18 @@
+{#- The introduction, with the portrait floated beside it. No heading. -#}
+{%- if data.intro_html or data.person.photo_path %}
+<div class="intro-block">
+  {%- if data.person.photo_path %}
+  <figure class="portrait-figure{% if data.person.photo_caption %} has-caption{% endif %}">
+    {#- width and height are measured from the image by the generator, so the
+        space is reserved before it loads. #}
+    <img class="portrait" src="{{ data.person.photo_path | url }}" alt="{{ data.person.photo_alt | default(value="Portrait of " ~ data.person.name) }}"
+         {%- if data.person.photo_width %} width="{{ data.person.photo_width }}" height="{{ data.person.photo_height }}"{% endif %}
+         decoding="async" fetchpriority="high">
+    {%- if data.person.photo_caption %}
+    <figcaption>{{ data.person.photo_caption }}</figcaption>
+    {%- endif %}
+  </figure>
+  {%- endif %}
+  <div class="prose intro">{{ data.intro_html | safe }}</div>
+</div>
+{%- endif %}

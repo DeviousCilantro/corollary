@@ -1,0 +1,27 @@
+{#- The title block: the name, then the address and profiles. -#}
+<header class="masthead">
+  <h1 class="title">{{ data.person.name }}</h1>
+
+  {#- The address on a line of its own, the profiles on the next: a wrapped
+      line never opens on a stranded separator. -#}
+  {%- if data.person.email or data.person.links | length > 0 %}
+  <div class="contact">
+    {%- if data.person.email %}
+    <p class="contact-email">
+      <a class="email" href="mailto:{{ data.person.email }}">{{ data.person.email }}</a>
+      <button class="ghost-button" type="button"
+              data-copy="{{ data.person.email }}"
+              data-copy-done="copied"
+              aria-label="Copy email address to clipboard">copy</button>
+    </p>
+    {%- endif %}
+    {%- if data.person.links | length > 0 %}
+    <p class="contact-links">
+      {%- for link in data.person.links %}
+      <a href="{{ link.url | url }}">{{ link.label }}</a>
+      {%- endfor %}
+    </p>
+    {%- endif %}
+  </div>
+  {%- endif %}
+</header>

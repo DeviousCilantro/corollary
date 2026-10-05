@@ -1,0 +1,47 @@
+[package]
+name = "site-wasm"
+version = "1.0.0"
+description = "Corollary: theme toggle and copy buttons"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+# rustc targets a WebAssembly baseline that includes bulk-memory and sign
+# extension; the wasm-opt that wasm-pack downloads must be told to accept them
+# or it rejects the module outright.
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = [
+  "-Oz",
+  "--enable-bulk-memory",
+  "--enable-sign-ext",
+  "--enable-nontrapping-float-to-int",
+  "--enable-mutable-globals",
+  "--enable-reference-types",
+]
+
+[dependencies]
+js-sys = "0.3"
+wasm-bindgen = "0.2"
+
+[dependencies.web-sys]
+version = "0.3"
+features = [
+  "Clipboard",
+  "Document",
+  "DomTokenList",
+  "Element",
+  "Event",
+  "EventTarget",
+  "HtmlElement",
+  "Location",
+  "MediaQueryList",
+  "Navigator",
+  "Node",
+  "NodeList",
+  "Selection",
+  "Storage",
+  "Window",
+]

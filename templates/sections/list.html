@@ -1,0 +1,42 @@
+{%- import "partials/paper.html" as paper -%}
+{#- Generic list, shaped like a talk: for awards, grants, students, news,
+    software, or anything else. In content/site.toml:
+
+      [[sections]]
+      kind = "list"
+      id = "awards"
+      title = "Awards"
+
+      [[sections.items]]
+      title = "Best Paper Award"          # required; Markdown allowed
+      meta = "Example Conference"         # optional, e.g. a venue or institution
+      meta_url = "https://example.org"    # optional, links `meta`
+      date = "2025"                       # optional
+      text = "For *A Paper Title*."       # optional; Markdown allowed
+      links = [{ label = "photo", url = "https://example.org" }]
+-#}
+{%- if section.items %}
+<ul class="entries">
+  {%- for item in section.items %}
+  <li class="entry">
+    <p class="entry-title">{{ item.title | inline_markdown | safe }}</p>
+    {%- if item.meta or item.date or item.links %}
+    <p class="entry-meta">
+      {%- if item.meta %}
+      <span class="entry-where">
+        {%- if item.meta_url %}<a href="{{ item.meta_url | url }}">{{ item.meta }}</a>{% else %}{{ item.meta }}{% endif -%}
+      </span>
+      {%- endif %}
+      {%- if item.date %}
+      <span class="entry-date">{{ item.date }}</span>
+      {%- endif %}
+      {%- if item.links %}{{ paper::link_run(links=item.links) }}{% endif %}
+    </p>
+    {%- endif %}
+    {%- if item.text %}
+    <p class="entry-text">{{ item.text | inline_markdown | safe }}</p>
+    {%- endif %}
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif %}

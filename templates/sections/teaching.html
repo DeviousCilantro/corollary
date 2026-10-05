@@ -1,0 +1,22 @@
+{%- import "partials/paper.html" as paper -%}
+{#- Entries from [[teaching]], in the order they are written. -#}
+{%- if data.teaching | length > 0 %}
+<ul class="entries">
+  {%- for item in data.teaching %}
+  <li class="entry">
+    <p class="entry-title">{{ item.role }}</p>
+    <p class="entry-meta">
+      <span class="entry-where">
+        {%- if item.institution_url %}<a href="{{ item.institution_url | url }}">{{ item.institution }}</a>
+        {%- else %}{{ item.institution }}{% endif -%}
+      </span>
+      <span class="entry-date">{{ item.term }}</span>
+      {{- paper::link_run(links=item.links) }}
+    </p>
+    {%- if item.text %}
+    <p class="entry-text">{{ item.text | inline_markdown | safe }}</p>
+    {%- endif %}
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif %}

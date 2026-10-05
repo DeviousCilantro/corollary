@@ -1,0 +1,19 @@
+[workspace]
+members = ["sitegen", "wasm"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/DeviousCilantro/corollary"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+# Cargo only honours profiles declared at the workspace root, so the settings
+# that keep the shipped WebAssembly small live here rather than in wasm/.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true

@@ -1,0 +1,22 @@
+{%- import "partials/paper.html" as paper -%}
+{#- Entries from [[talks]], in the order they are written. -#}
+{%- if data.talks | length > 0 %}
+<ul class="entries">
+  {%- for talk in data.talks %}
+  <li class="entry">
+    <p class="entry-title">{{ talk.title | inline_markdown | safe }}</p>
+    <p class="entry-meta">
+      <span class="entry-where">
+        {%- if talk.venue_url %}<a href="{{ talk.venue_url | url }}">{{ talk.venue }}</a>
+        {%- else %}{{ talk.venue }}{% endif -%}
+      </span>
+      <span class="entry-date">{{ talk.date }}</span>
+      {{- paper::link_run(links=talk.links) }}
+    </p>
+    {%- if talk.text %}
+    <p class="entry-text">{{ talk.text | inline_markdown | safe }}</p>
+    {%- endif %}
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif %}

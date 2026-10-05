@@ -1,0 +1,185 @@
+/* ===========================================================================
+   theme.css — typefaces and colour.
+
+   Everything a reader would call "the look" lives here as CSS custom
+   properties; site.css only consumes them. Three ways to change it, from
+   least to most invasive:
+
+     1. [theme] in content/site.toml, e.g.
+          [theme]
+          light = { accent = "#8a1c1c", accent-hover = "#a83a3a" }
+          dark  = { accent = "#e09a9a" }
+        Any property below may be named, without the leading dashes.
+     2. static/assets/css/custom.css, loaded after this file and site.css.
+     3. Editing this file.
+
+   The dark palette appears twice on purpose: once for an explicit choice made
+   with the toggle (html[data-theme="dark"]), once under prefers-color-scheme
+   for readers who have not chosen. Change one, change both.
+
+   Corollary's default look is "paper and blackboard":
+
+     light  blue-black fountain-pen ink on ivory paper, with links marked the
+            way one marks up a paper — a stroke of yellow highlighter behind
+            the lower half of the word. Selected text is highlighted too.
+     dark   chalk on a slate blackboard: white chalk for the text, and links
+            written in yellow chalk — the highlighter's colour, now the ink.
+
+   The yellow is the constant: the highlighter by day, the chalk by night. Every text colour clears WCAG AA on its
+   ground; headings sit near 15:1 and body text near 10:1, roughly where print
+   sits, short of the glare of pure black on white.
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Literata, served from this origin (SIL Open Font License; see
+   /assets/fonts/OFL.txt).
+
+   Literata carries `smcp` (true small caps) and `onum` (old-style figures),
+   both used by site.css, and is drawn for reading at text sizes. Two files,
+   latin only, weight 400–600 variable in each, ~77 KB the pair.
+
+   To use another face: replace the two files, these two blocks, and the first
+   entry of --serif. A face without `smcp` and `onum` will quietly fall back to
+   synthesised small caps and lining figures. To download no font at all,
+   delete both blocks and the "Literata" entry: the platform stack behind it
+   takes over.
+   --------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Literata";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/literata-roman-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+                 U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Literata";
+  font-style: italic;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/literata-italic-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+                 U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+
+  /* Ivory rather than cream: warm enough to be paper, cool enough that the
+     blue-black ink reads as ink and not as a sepia print. */
+  --paper: #f8f7f2;
+  --paper-raised: #fdfdfa;
+
+  --ink: #1c1f2e;           /* headings, names, titles: blue-black */
+  --body: #363946;          /* running text */
+  --muted: #686b78;         /* metadata, dates, labels */
+
+  --rule: #e3e2db;
+  --rule-strong: #c6c5bd;
+
+  --accent: #2b3c8c;        /* fountain-pen blue */
+  --accent-hover: #43549f;
+  --accent-quiet: #fbe7a1;  /* text selection: highlighter */
+
+  /* Prose links are marked with a stroke of highlighter behind the lower half
+     of the word rather than an underline, so a paragraph carrying many
+     institution and coauthor links still reads as continuous text. On hover a
+     second, stronger stroke is drawn across the word, left to right, the way a
+     pen marks a line. --highlight is the pen itself; it also colours the
+     generated favicon. */
+  --highlight: #ffd43b;
+  --link-wash: rgba(255, 212, 59, 0.40);
+  --link-wash-hover: rgba(255, 212, 59, 0.75);
+  --link-mark: linear-gradient(to top, var(--link-wash) 0 0.45em, transparent 0.45em);
+  --link-sweep: linear-gradient(to top, var(--link-wash-hover) 0 0.5em, transparent 0.5em);
+  --link-hover-line: none;
+
+  --serif: "Literata", ui-serif, "New York", Charter, "Bitstream Charter",
+           "Iowan Old Style", "Sitka Text", Cambria, Georgia, serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+          "Liberation Mono", monospace;
+
+  /* The page is one centred column, about 70 characters of Literata wide:
+     the measure of a printed text block. */
+  --measure: 42rem;
+  --gutter: 1.5rem;
+
+  /* The portrait, floated beside the introduction: round, with the text
+     following its curve. For a square portrait set both of
+       --portrait-radius: 2px;  --portrait-shape: none;
+     or the text will run into its corners. */
+  --portrait-size: 9.5rem;
+  --portrait-radius: 50%;
+  --portrait-shape: circle(50%) content-box;
+  /* Colour held a little back, so the photograph sits in the page. */
+  --portrait-filter: saturate(0.82);
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Slate, not black: a blackboard, with chalk on it. */
+  --paper: #171b1f;
+  --paper-raised: #1e2328;
+
+  --ink: #ebe9e2;           /* white chalk */
+  --body: #c6c5bf;
+  --muted: #8a8f97;
+
+  --rule: #2d3339;
+  --rule-strong: #4a525a;
+
+  /* On a blackboard there is no highlighter: links are simply written in
+     yellow chalk. Any translucent yellow laid under them on slate muddies to
+     olive, so they carry no mark at rest, and a fine chalk line on hover. */
+  --accent: #ecd68f;        /* yellow chalk */
+  --accent-hover: #f6e7b8;
+  --accent-quiet: #33405f;  /* text selection: blue chalk dust */
+
+  --highlight: #ecd68f;
+  --link-wash: rgba(236, 214, 143, 0.14);
+  --link-wash-hover: rgba(236, 214, 143, 0.2);
+  --link-mark: none;
+  --link-sweep: none;
+  --link-hover-line: underline;
+
+  /* On the blackboard a photograph would be the brightest thing on the page. */
+  --portrait-filter: saturate(0.75) brightness(0.86);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --paper: #171b1f;
+    --paper-raised: #1e2328;
+
+    --ink: #ebe9e2;
+    --body: #c6c5bf;
+    --muted: #8a8f97;
+
+    --rule: #2d3339;
+    --rule-strong: #4a525a;
+
+    --accent: #ecd68f;
+    --accent-hover: #f6e7b8;
+    --accent-quiet: #33405f;
+
+    --highlight: #ecd68f;
+    --link-wash: rgba(236, 214, 143, 0.14);
+    --link-wash-hover: rgba(236, 214, 143, 0.2);
+    --link-mark: none;
+    --link-sweep: none;
+    --link-hover-line: underline;
+    --portrait-filter: saturate(0.75) brightness(0.86);
+  }
+}

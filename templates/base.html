@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="{{ data.site.lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+
+  <title>{% block title %}{{ data.site.title }}{% endblock title %}</title>
+  <meta name="description" content="{{ data.site.description }}">
+  <link rel="canonical" href="{{ data.site.base_url }}{% block canonical_path %}/{% endblock canonical_path %}">
+  <link rel="icon" href="{{ "/favicon.svg" | url }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ "/assets/css/theme.css" | url }}">
+  <link rel="stylesheet" href="{{ "/assets/css/site.css" | url }}">
+  {%- if data.has_custom_css %}
+  <link rel="stylesheet" href="{{ "/assets/css/custom.css" | url }}">
+  {%- endif %}
+  {%- if data.theme_css %}
+  {#- Overrides from [theme] in content/site.toml. #}
+  <style>{{ data.theme_css | safe }}</style>
+  {%- endif %}
+
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="{{ data.person.name }}">
+  <meta property="og:description" content="{{ data.site.description }}">
+  <meta property="og:url" content="{{ data.site.base_url }}/">
+  {%- if data.person.photo_path %}
+  <meta property="og:image" content="{{ data.site.base_url }}{{ data.person.photo_path }}">
+  <meta property="og:image:alt" content="{{ data.person.photo_alt | default(value=data.person.name) }}">
+  {%- if data.person.photo_width %}
+  <meta property="og:image:width" content="{{ data.person.photo_width }}">
+  <meta property="og:image:height" content="{{ data.person.photo_height }}">
+  {%- endif %}
+  {%- endif %}
+
+  {#- A square portrait: "summary" shows it beside the text, where
+      "summary_large_image" would crop it into a banner. #}
+  <meta name="twitter:card" content="summary">
+
+  {#- The one piece of hand-written JavaScript on the site. WebAssembly is
+      instantiated asynchronously and so cannot run before the first paint; a
+      reader who has explicitly chosen a theme would otherwise see a flash of
+      the wrong one. Everything else, including all content and all
+      mathematics, is rendered in Rust at build time. -#}
+  {%- if data.features.theme_toggle %}
+  <script>
+    try {
+      var stored = localStorage.getItem('theme');
+      if (stored === 'light' || stored === 'dark') {
+        document.documentElement.setAttribute('data-theme', stored);
+      }
+    } catch (e) {}
+  </script>
+  {%- endif %}
+
+  <script type="application/ld+json">{{ data.json_ld | safe }}</script>
+  {% include "partials/head-extra.html" %}
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+
+  {#- The theme switch, alone in the top corner. -#}
+  <header class="running-head">
+    {%- if data.features.theme_toggle %}
+    {#- The glyph itself comes from CSS, so it is already correct at first paint
+        whether the theme is chosen or inherited from the system. The label here
+        is for screen readers, which cannot read a pseudo-element. #}
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch colour theme" aria-pressed="false">
+      <span class="visually-hidden" data-theme-label>Theme</span>
+    </button>
+    {%- endif %}
+  </header>
+
+  <main id="content">
+    {% block content %}{% endblock content %}
+  </main>
+
+  <footer class="site-footer">
+    <span>&copy; {{ build.year }} {{ data.person.name }}</span>
+    {%- if data.site.footer_html %}
+    <span class="footer-note">{{ data.site.footer_html | safe }}</span>
+    {%- endif %}
+    {%- if data.site.credit %}
+    {#- Optional — `credit = false` under [site] removes it — but kept on by
+        default as a thank-you to the template it came from. #}
+    <span class="credit">Built with <a href="https://github.com/DeviousCilantro/corollary">Corollary</a></span>
+    {%- endif %}
+  </footer>
+
+  {#- Theme toggle and copy buttons. Loaded with a dynamic import so that a build
+      without wasm-pack, which has no module to load, fails quietly. #}
+  <script type="module">
+    import('{{ "/assets/wasm/site_wasm.js" | url }}').then((m) => m.default()).catch(() => {});
+  </script>
+  {% include "partials/body-end.html" %}
+</body>
+</html>

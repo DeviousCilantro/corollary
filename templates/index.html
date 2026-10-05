@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ data.site.title }}{% endblock title %}
+{% block canonical_path %}/{% endblock canonical_path %}
+
+{#- A title block, then the sections listed under [[sections]] in
+    content/site.toml, each rendered beforehand by
+    templates/sections/<kind>.html. To change one section, edit its template;
+    to change their order, reorder [[sections]]. #}
+{% block content %}
+<article class="paper">
+
+  {% include "partials/masthead.html" %}
+
+  {%- for s in sections %}
+  <section id="{{ s.id }}" class="section section-{{ s.kind }}">
+    {%- if s.title %}
+    <h2 class="section-title">{{ s.title }}</h2>
+    {%- endif %}
+    {{ s.html | safe }}
+  </section>
+  {%- endfor %}
+
+</article>
+{% endblock content %}
