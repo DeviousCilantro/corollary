@@ -7,9 +7,9 @@
    sections under small-caps heads with a hairline running out to the right
    margin, and a short footer.
 
-   One text face, Literata, with a monospace kept for BibTeX and the copy
-   buttons. No cards, no shadows, no icons beyond the theme switch: structure
-   is carried by type and whitespace alone.
+   One text face, Literata, with a monospace kept for BibTeX alone. No cards,
+   no shadows, no icons beyond the theme switch: structure is carried by type
+   and whitespace alone.
 
    Colours, fonts and widths are custom properties defined in theme.css. For
    small additions, prefer static/assets/css/custom.css, which loads last.
@@ -379,10 +379,12 @@ html[data-theme="dark"] .theme-toggle {
 
 /* The text follows the curve of a round portrait rather than the square box
    around it. Tied to a token, so a square portrait (see theme.css) switches
-   it off, and never applied under a caption, which would distort the shape. */
+   it off, and never applied under a caption, which would distort the shape.
+   The margin is generous enough that a line running beneath the curve does
+   not brush against it. */
 .portrait-figure:not(.has-caption) {
   shape-outside: var(--portrait-shape);
-  shape-margin: 1.1rem;
+  shape-margin: 1.45rem;
 }
 
 .portrait {
@@ -540,14 +542,15 @@ html[data-theme="dark"] .theme-toggle {
 }
 
 /* Coauthors, venues and institutions are quiet: they inherit the colour of
-   their line, so the eye is not pulled through the list. Actions — ePrint,
-   slides, BibTeX — keep the accent. */
+   their line and are underlined only under the pointer, so the eye is not
+   pulled through the list and a row of venues does not read as a row of
+   rules. Actions — ePrint, slides, BibTeX — keep the accent. */
 .entry-authors a,
 .entry-where a,
 .pub-venue a,
 .service-venues a {
   color: inherit;
-  text-decoration-color: color-mix(in srgb, currentColor 24%, transparent);
+  text-decoration-color: transparent;
 }
 
 .entry-authors a:hover,
@@ -555,6 +558,7 @@ html[data-theme="dark"] .theme-toggle {
 .pub-venue a:hover,
 .service-venues a:hover {
   color: var(--accent);
+  text-decoration-color: currentColor;
 }
 
 .entry-meta > a {
@@ -668,10 +672,14 @@ summary:hover {
   line-height: 1.5;
 }
 
+/* The box's own ground behind the label, so an entry scrolled sideways
+   passes under it rather than through it. */
 .bibtex-body .ghost-button {
   position: absolute;
   top: 0.45rem;
   right: 0.45rem;
+  padding: 0 0.35rem;
+  background: var(--paper-raised);
 }
 
 .abstract {
@@ -690,26 +698,25 @@ summary:hover {
    Controls
    --------------------------------------------------------------------------- */
 
+/* The copy buttons are set in the page's own type, in the small caps of the
+   section heads, rather than as a boxed chip. */
 .ghost-button {
   appearance: none;
   cursor: pointer;
-  padding: 0.1rem 0.4rem;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  background: var(--paper-raised);
+  padding: 0 0.15rem;
+  border: 0;
+  border-radius: 2px;
+  background: none;
   color: var(--muted);
-  font-family: var(--mono);
-  font-size: 0.68rem;
+  font-family: var(--serif);
+  font-size: 0.86rem;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
   line-height: 1.5;
 }
 
-.ghost-button:hover {
-  border-color: var(--rule-strong);
-  color: var(--ink);
-}
-
+.ghost-button:hover,
 .ghost-button[data-copied] {
-  border-color: var(--accent);
   color: var(--accent);
 }
 
@@ -763,13 +770,16 @@ summary:hover {
     padding: 2.2rem 0 1.9rem;
   }
 
+  /* The column beside a floated portrait is too narrow for prose on a phone:
+     the portrait stands above the introduction instead, on the left edge. */
   .portrait-figure {
-    width: 6.75rem;
-    margin-left: 1.1rem;
+    float: none;
+    width: 6.25rem;
+    margin: 0 0 1.25rem;
   }
 
   .portrait-figure:not(.has-caption) {
-    shape-margin: 0.8rem;
+    shape-outside: none;
   }
 
   /* A wrapped line would open on a stranded dot; on a phone the profiles

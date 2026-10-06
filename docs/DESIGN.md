@@ -26,15 +26,16 @@ between two empty margins.
 The page opens with the name as the title — the theme switch alone in the
 corner above it — then the contact line, and the introduction. The portrait is round, and the text follows
 its curve rather than the square box around it: the one soft shape on a page
-of straight lines. A one-line footer closes the page.
+of straight lines. On a phone, where the column beside it would be too narrow
+for prose, it stands above the introduction instead. A one-line footer closes the page.
 
 ## Typography
 
 One text face, Literata, chosen because it carries the two features the page
 relies on and most platform serifs lack: true small caps and old-style
-figures. A monospace is kept for BibTeX and the copy buttons only.
+figures. A monospace is kept for BibTeX only.
 
-- **Small caps** for the section heads, letter-spaced. Nothing else.
+- **Small caps** for the section heads, letter-spaced, and the copy buttons.
 - **Old-style figures** throughout the prose: a year in a sentence is a word,
   not a measurement. Code is exempt; a BibTeX year wants to line up.
 - **Italic** for the venue of a paper and the authorship note.
@@ -67,7 +68,8 @@ headings sit near 15:1 and body text near 10:1, roughly where print sits. Every
 text colour clears WCAG AA against its own ground.
 
 Metadata links — coauthors, venues, institutions — inherit their line's colour
-and stay quiet, so the eye is not pulled through the lists. Actions — ePrint,
+and are underlined only under the pointer, so the eye is not pulled through
+the lists. Actions — ePrint,
 slides, BibTeX — keep the accent.
 
 ## Details that do work
