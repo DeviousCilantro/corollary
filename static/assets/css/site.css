@@ -399,11 +399,6 @@ html[data-theme="dark"] .theme-toggle {
   filter: var(--portrait-filter);
 }
 
-/* The title block's copy of the portrait, displayed on a phone only. */
-.masthead-portrait {
-  display: none;
-}
-
 .portrait-figure figcaption {
   margin-top: 0.45rem;
   font-size: 0.8rem;
@@ -799,8 +794,10 @@ summary:hover {
     grid-column: 1 / -1;
   }
 
+  /* Hidden by an inline style in the markup (see masthead.html), which only
+     this rule overrides. */
   .masthead-portrait {
-    display: block;
+    display: block !important;
     grid-column: 2;
     grid-row: 2;
     width: 4.75rem;
