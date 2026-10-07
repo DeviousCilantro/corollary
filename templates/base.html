@@ -87,9 +87,14 @@
   </footer>
 
   {#- Theme toggle and copy buttons. Loaded with a dynamic import so that a build
-      without wasm-pack, which has no module to load, fails quietly. #}
+      without wasm-pack, which has no module to load, fails quietly. Both
+      files are fingerprinted, and the loader is handed the module's URL
+      rather than deriving it from its own, which would drop the fingerprint:
+      a cached loader is never paired with a module from another build. #}
   <script type="module">
-    import('{{ "/assets/wasm/site_wasm.js" | url }}').then((m) => m.default()).catch(() => {});
+    import('{{ "/assets/wasm/site_wasm.js" | asset }}')
+      .then((m) => m.default({ module_or_path: '{{ "/assets/wasm/site_wasm_bg.wasm" | asset }}' }))
+      .catch(() => {});
   </script>
   {% include "partials/body-end.html" %}
 </body>

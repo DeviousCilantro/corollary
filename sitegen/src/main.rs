@@ -67,6 +67,7 @@ fn main() -> Result<()> {
         .with_context(|| format!("creating {}", public_dir.display()))?;
 
     render::copy_dir(&root.join("static"), &public_dir)?;
+    copy_wasm(&root.join("wasm/pkg"), &public_dir.join("assets/wasm"))?;
     // Tells GitHub Pages not to run Jekyll over the output.
     fs::write(public_dir.join(".nojekyll"), "")?;
     if root.join("CNAME").exists() {
@@ -160,7 +161,7 @@ fn missing_local_files(public_dir: &Path, base_path: &str) -> Result<Vec<String>
                 } else {
                     file.is_file()
                 };
-                // The WebAssembly module is added after the generator runs.
+                // The WebAssembly module is absent from a build without wasm-pack.
                 if !found && !local.starts_with("assets/wasm/") {
                     missing.insert(path.to_string());
                 }
@@ -168,6 +169,25 @@ fn missing_local_files(public_dir: &Path, base_path: &str) -> Result<Vec<String>
         }
     }
     Ok(missing.into_iter().collect())
+}
+
+/// The theme toggle and copy buttons, as built by scripts/build.sh into
+/// `wasm/pkg/`: the module and its JavaScript loader, copied in before the
+/// pages are rendered so the `asset` filter can fingerprint them. Nothing to
+/// copy when the build ran without wasm-pack.
+fn copy_wasm(pkg: &Path, dest: &Path) -> Result<()> {
+    if !pkg.is_dir() {
+        return Ok(());
+    }
+    for entry in fs::read_dir(pkg).with_context(|| format!("reading {}", pkg.display()))? {
+        let path = entry?.path();
+        if path.extension().is_some_and(|ext| ext == "js" || ext == "wasm") {
+            fs::create_dir_all(dest)?;
+            fs::copy(&path, dest.join(path.file_name().context("no file name")?))
+                .with_context(|| format!("copying {}", path.display()))?;
+        }
+    }
+    Ok(())
 }
 
 fn write_unless_present(path: &Path, contents: &str) -> Result<()> {
