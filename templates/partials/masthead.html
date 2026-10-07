@@ -1,5 +1,12 @@
 {#- The title block: the name, then the address and profiles. -#}
-<header class="masthead">
+{#- On a phone the portrait joins the title block, beside the address and
+    profiles, rather than standing alone above the introduction. It is a
+    second copy of the introduction's image, with the same URL, so the browser
+    fetches it once; site.css displays exactly one of the two. A captioned
+    portrait stays with its caption in the introduction. -#}
+{%- set intro_sections = sections | filter(attribute="kind", value="about") %}
+{%- set masthead_portrait = intro_sections | length > 0 and data.person.photo_path and not data.person.photo_caption %}
+<header class="masthead{% if masthead_portrait %} has-portrait{% endif %}">
   <h1 class="title">{{ data.person.name }}</h1>
 
   {#- The address on a line of its own, the profiles on the next: a wrapped
@@ -23,5 +30,11 @@
     </p>
     {%- endif %}
   </div>
+  {%- endif %}
+
+  {%- if masthead_portrait %}
+  <img class="portrait masthead-portrait" src="{{ data.person.photo_path | url }}" alt="{{ data.person.photo_alt | default(value="Portrait of " ~ data.person.name) }}"
+       {%- if data.person.photo_width %} width="{{ data.person.photo_width }}" height="{{ data.person.photo_height }}"{% endif %}
+       decoding="async">
   {%- endif %}
 </header>

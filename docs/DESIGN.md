@@ -27,7 +27,7 @@ The page opens with the name as the title — the theme switch alone in the
 corner above it — then the contact line, and the introduction. The portrait is round, and the text follows
 its curve rather than the square box around it: the one soft shape on a page
 of straight lines. On a phone, where the column beside it would be too narrow
-for prose, it stands above the introduction instead. A one-line footer closes the page.
+for prose, it joins the title block instead, beside the address and profiles. A one-line footer closes the page.
 
 ## Typography
 
