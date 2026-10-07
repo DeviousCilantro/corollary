@@ -77,7 +77,7 @@ fn main() -> Result<()> {
     write_unless_present(&public_dir.join("favicon.svg"), &favicon)?;
     fs::write(public_dir.join("sitemap.xml"), seo::sitemap(&data.site.base_url))?;
 
-    let tera = render::tera(&root, &data.site.base_path)?;
+    let tera = render::tera(&root, &data.site.base_path, &public_dir)?;
     let build = BuildInfo { year: chrono::Local::now().year() };
     let rendered = render::render_sections(&tera, &sections, &data, &build)?;
     render::render_page(&tera, "index.html", &data, &build, &rendered, &public_dir.join("index.html"))?;

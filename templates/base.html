@@ -9,10 +9,10 @@
   <meta name="description" content="{{ data.site.description }}">
   <link rel="canonical" href="{{ data.site.base_url }}{% block canonical_path %}/{% endblock canonical_path %}">
   <link rel="icon" href="{{ "/favicon.svg" | url }}" type="image/svg+xml">
-  <link rel="stylesheet" href="{{ "/assets/css/theme.css" | url }}">
-  <link rel="stylesheet" href="{{ "/assets/css/site.css" | url }}">
+  <link rel="stylesheet" href="{{ "/assets/css/theme.css" | asset }}">
+  <link rel="stylesheet" href="{{ "/assets/css/site.css" | asset }}">
   {%- if data.has_custom_css %}
-  <link rel="stylesheet" href="{{ "/assets/css/custom.css" | url }}">
+  <link rel="stylesheet" href="{{ "/assets/css/custom.css" | asset }}">
   {%- endif %}
   {%- if data.theme_css %}
   {#- Overrides from [theme] in content/site.toml. #}

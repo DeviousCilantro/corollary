@@ -80,6 +80,8 @@ slides, BibTeX — keep the accent.
 - Opening a BibTeX entry never moves its label.
 - Copy buttons say "copied" only when the clipboard has the text; otherwise
   they select it and name the shortcut.
+- Stylesheet URLs carry a fingerprint of their contents, so a browser never
+  lays out a new page with a stylesheet it cached from an older one.
 
 ## Rendering
 

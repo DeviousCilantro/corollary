@@ -120,7 +120,13 @@ Plus everything [Tera](https://keats.github.io/tera/docs/) offers.
 | `templates/404.html` | The not-found page. |
 
 For example, a privacy-friendly analytics snippet goes in `head-extra.html`;
-nothing else needs to change.
+nothing else needs to change. A stylesheet of your own added there should be
+linked through the `asset` filter, which fingerprints the URL so a visitor
+never pairs a new page with a cached old copy:
+
+```html
+<link rel="stylesheet" href="{{ "/assets/css/talks.css" | asset }}">
+```
 
 ## 6. Typeface
 

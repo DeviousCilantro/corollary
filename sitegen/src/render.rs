@@ -81,7 +81,9 @@ pub struct RenderedSection {
     html: String,
 }
 
-pub fn tera(root: &Path, base_path: &str) -> Result<Tera> {
+/// `public_dir` must already hold the copied `static/` files, which the `asset`
+/// filter fingerprints.
+pub fn tera(root: &Path, base_path: &str, public_dir: &Path) -> Result<Tera> {
     let glob = root.join("templates/**/*.html");
     let mut tera = Tera::new(glob.to_str().context("template path is not UTF-8")?)?;
 
@@ -98,6 +100,22 @@ pub fn tera(root: &Path, base_path: &str) -> Result<Tera> {
     let bp = base_path.to_string();
     tera.register_filter("url", move |value: &Value, _: &HashMap<String, Value>| {
         Ok(Value::String(markdown::site_url(value.as_str().unwrap_or_default(), &bp)))
+    });
+    // `{{ "/assets/css/site.css" | asset }}` — `url`, plus a fingerprint of the
+    // file's contents. A browser caches a stylesheet for some minutes, and a new
+    // page arriving with the old stylesheet would be laid out by rules written
+    // for different markup; a fingerprint changes the URL whenever the file
+    // changes, so a page only ever loads the files it was built with.
+    let bp = base_path.to_string();
+    let public = public_dir.to_path_buf();
+    tera.register_filter("asset", move |value: &Value, _: &HashMap<String, Value>| {
+        let path = value.as_str().unwrap_or_default();
+        let url = markdown::site_url(path, &bp);
+        Ok(Value::String(match fs::read(public.join(path.trim_start_matches('/'))) {
+            Ok(bytes) => format!("{url}?v={}", fingerprint(&bytes)),
+            // A missing file is reported by the link check after rendering.
+            Err(_) => url,
+        }))
     });
 
     // Tera's stock escaper also encodes '/', which turns every href into
@@ -275,9 +293,29 @@ fn escape_html(input: &str) -> String {
     out
 }
 
+/// Ten hex digits of the 64-bit FNV-1a hash of `bytes`: stable across builds and
+/// platforms, which `std`'s randomly seeded hasher is not, and plenty to tell
+/// one version of a stylesheet from the next.
+fn fingerprint(bytes: &[u8]) -> String {
+    let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
+    for &byte in bytes {
+        hash ^= u64::from(byte);
+        hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+    }
+    format!("{hash:016x}")[..10].to_string()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_fingerprint_is_stable_and_follows_the_contents() {
+        // The published FNV-1a 64 test vector for "a".
+        assert_eq!(fingerprint(b"a"), "af63dc4c86");
+        assert_eq!(fingerprint(b"body { }"), fingerprint(b"body { }"));
+        assert_ne!(fingerprint(b"body { }"), fingerprint(b"body {}"));
+    }
 
     #[test]
     fn theme_overrides_cover_both_dark_paths() {
