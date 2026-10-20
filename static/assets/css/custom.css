@@ -7,15 +7,14 @@
 
    A few things to try:
 
-   A square portrait (the second line stops the text following a curve):
-     :root { --portrait-radius: 2px; --portrait-shape: none; }
+   A round portrait instead of the squircle:
+     .portrait { -webkit-mask: none; mask: none; border-radius: 50%; }
 
+   Underlined prose links:
+     .prose a { text-decoration: underline; text-underline-offset: 0.2em; }
 
-   Underline prose links instead of the highlighter wash:
-     .prose a { background-image: none; text-decoration: underline; }
-
-   Sharp-cornered portrait:
-     :root { --portrait-radius: 0; }
+   Another accent (or use [theme] in content/site.toml):
+     :root { --accent: #9b2226; }
 
    Style one section alone (every section has class "section-<kind>" and the
    id from content/site.toml):

@@ -16,10 +16,10 @@ light values go on `:root`; the dark values are applied both when a reader
 picks dark with the toggle and when their system asks for it. The generated
 favicon follows `accent`, `paper` and `highlight`.
 
-To keep the page's character, change hues rather than structure: one ink
-colour for links, one highlighter behind them. The default pairing —
-fountain-pen blue with a yellow highlighter on ivory, yellow chalk on slate
-in the dark — is described in [DESIGN.md](DESIGN.md).
+To keep the page's character, change hues rather than structure: one accent
+for links, labels and separators, and a second (`accent-2`) for highlighted
+BibTeX. The default pairing, slate blue and teal on a cool grey paper and a
+slate-tinted near-black, is described in [DESIGN.md](DESIGN.md).
 
 ## 2. Small CSS changes, in `custom.css`
 
@@ -28,14 +28,14 @@ there wins without editing the built-in stylesheets — which keeps later
 updates painless. A few things to try:
 
 ```css
-/* A square portrait; the second property stops the text following a curve */
-:root { --portrait-radius: 2px; --portrait-shape: none; }
+/* A round portrait instead of the squircle */
+.portrait { -webkit-mask: none; mask: none; border-radius: 50%; }
 
 /* A wider text block */
 :root { --measure: 44rem; }
 
-/* Underlined links instead of the highlighter */
-.prose a { background-image: none; text-decoration: underline; }
+/* Underlined prose links */
+.prose a { text-decoration: underline; text-underline-offset: 0.2em; }
 
 /* One section alone: each is <section id="…" class="section section-<kind>"> */
 #awards .entry-title { font-style: italic; }
@@ -102,6 +102,7 @@ Filters available in every template:
 | `markdown` | Markdown + LaTeX to HTML, as paragraphs. |
 | `inline_markdown` | The same, without the enclosing paragraph. |
 | `url` | Prefixes a root-relative link with the site's subpath, if any. Use it on every `href` and `src`. |
+| `asset` | `url`, plus a fingerprint of the file's contents, for stylesheets and scripts. |
 
 Plus everything [Tera](https://keats.github.io/tera/docs/) offers.
 
@@ -111,8 +112,8 @@ Plus everything [Tera](https://keats.github.io/tera/docs/) offers.
 | --- | --- |
 | `templates/base.html` | `<head>`, the theme switch, footer, scripts. |
 | `templates/index.html` | Title block, then the section loop. |
-| `templates/partials/masthead.html` | Title block: name, email, profile links. |
-| `templates/sections/about.html` | The introduction, with the portrait beside it. |
+| `templates/partials/masthead.html` | Title block: name, email, profile icons, and the portrait beside them. |
+| `templates/sections/about.html` | The introduction (and a captioned portrait, which stays with it). |
 | `templates/partials/paper.html` | One publication entry; the link-run macro. |
 | `templates/sections/*.html` | One file per kind of section. |
 | `templates/partials/head-extra.html` | Empty hook at the end of `<head>`: analytics, verification tags, extra styles. |
@@ -128,14 +129,16 @@ never pairs a new page with a cached old copy:
 <link rel="stylesheet" href="{{ "/assets/css/talks.css" | asset }}">
 ```
 
-## 6. Typeface
+## 6. Typefaces
 
-The serif is Literata, served from `static/assets/fonts/`. To use another
-face, replace the two `.woff2` files, the two `@font-face` blocks at the top of
-`theme.css`, and the first entry of `--serif`. A face without true small caps
-(`smcp`) and old-style figures (`onum`) will fall back to synthesised small
-caps and lining figures. To download no font at all, delete both blocks and
-the `"Literata"` entry; the platform serif takes over.
+Three faces are served from `static/assets/fonts/`: Be Vietnam Pro for the
+page (regular, medium, semibold), DM Mono for the email address, and Azeret
+Mono for BibTeX. To use another face, replace its `.woff2` files and
+`@font-face` blocks at the top of `theme.css`, and the first entry of the
+matching stack (`--sans`, `--mono-address` or `--mono`). The page's regular
+face is also preloaded in `templates/base.html`; change that URL with it. To
+download no font at all, delete the blocks and the named entries; the
+platform's own faces take over. Licences are in `static/assets/fonts/OFL.txt`.
 
 ## 7. The generator
 
@@ -146,18 +149,31 @@ the `"Literata"` entry; the platform serif takes over.
 | `config.rs` | The schema of `site.toml`. Add a field here first. |
 | `publications.rs` | Status, sorting, author links, the publication view. |
 | `bibtex.rs` | Citation keys and entries. |
+| `plugins/` | Build plugins behind one trait: `bibtex_highlight`, `minify_css`. |
 | `markdown.rs` | Markdown, LaTeX → MathML, URL prefixing. |
 | `seo.rs` | JSON-LD, sitemap, robots.txt, favicon. |
 | `render.rs` | Tera setup and filters, the section pipeline, file output. |
 | `main.rs` | Wiring. |
 
-`cargo test -p sitegen` covers ordering, the publication/manuscript split,
-BibTeX, ePrint and arXiv handling, the maths pipeline, base paths and theme
-overrides. Add a test with any change.
+`cargo test -p sitegen` covers ordering, the Research list and the
+publication/manuscript split, BibTeX and its highlighting, CSS minification,
+ePrint and arXiv handling, the maths pipeline, base paths and theme overrides.
+Add a test with any change.
 
-The WebAssembly crate in `wasm/` handles only what cannot be decided at build
-time: the reader's theme choice and their clipboard. Everything else stays in
-the generator, so the page remains complete without JavaScript.
+### Plugins
+
+A build plugin is a module in `sitegen/src/plugins/` with a type implementing
+`BuildPlugin`. Its two hooks both default to doing nothing: `asset` may rewrite
+any file copied from `static/` (before its URL is fingerprinted), and
+`publication` may decorate each entry before it is rendered. Give it a switch
+in `config::Plugins` and register it in `Plugins::new`.
+
+A page plugin is a module in `wasm/src/plugins/` exporting a `Plugin` (a name
+and an `install` function), listed in `plugins::ALL`. The generator names the
+enabled ones in `<html data-plugins="…">`; the module installs only those.
+The WebAssembly crate handles only what cannot be decided at build time (the
+reader's theme choice, their clipboard, motion), so the page remains complete
+without JavaScript.
 
 ## Keeping up with Corollary
 

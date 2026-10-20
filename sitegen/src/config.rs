@@ -31,6 +31,8 @@ pub struct SiteFile {
     #[serde(default)]
     pub features: Features,
     #[serde(default)]
+    pub plugins: Plugins,
+    #[serde(default)]
     pub people: BTreeMap<String, String>,
     /// Which sections appear, in what order. Empty means [`DEFAULT_SECTIONS`].
     #[serde(default)]
@@ -47,8 +49,7 @@ pub struct SiteFile {
 
 /// The page used when `[[sections]]` is absent: the introduction, then every
 /// built-in list. A section with nothing in it is dropped from the page.
-pub const DEFAULT_SECTIONS: [&str; 6] =
-    ["about", "publications", "manuscripts", "talks", "teaching", "service"];
+pub const DEFAULT_SECTIONS: [&str; 5] = ["about", "research", "talks", "teaching", "service"];
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -193,6 +194,26 @@ pub struct Features {
 impl Default for Features {
     fn default() -> Self {
         Self { theme_toggle: true }
+    }
+}
+
+/// `[plugins]`: each self-contained feature, on unless switched off. See
+/// `sitegen/src/plugins/` for the build plugins and `wasm/src/plugins/` for
+/// those that run in the page.
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub struct Plugins {
+    /// Colour BibTeX entries at build time.
+    pub bibtex_highlight: bool,
+    /// Strip comments and spare whitespace from the shipped stylesheets.
+    pub minify_css: bool,
+    /// Let the headings' gradient drift slowly (in the page, via WebAssembly).
+    pub heading_flow: bool,
+}
+
+impl Default for Plugins {
+    fn default() -> Self {
+        Self { bibtex_highlight: true, minify_css: true, heading_flow: true }
     }
 }
 

@@ -155,7 +155,9 @@ the order written. `year` may be a number or a string.
 ## `[[sections]]`
 
 Which sections appear and in what order. Leave it out for the default:
-`about`, `publications`, `manuscripts`, `talks`, `teaching`, `service`.
+`about`, `research`, `talks`, `teaching`, `service`. `research` lists every
+`[[publications]]` entry together, newest year first; to split published work
+from work in flight, use `publications` and `manuscripts` in its place.
 
 | Key | Meaning |
 | --- | --- |
@@ -225,6 +227,21 @@ directly.
 | --- | --- | --- |
 | `theme_toggle` | `true` | The light/dark switch. Without it the page follows the reader's system setting. |
 
+## `[plugins]`
+
+Each self-contained feature, on unless switched off. Build plugins run in the
+generator (`sitegen/src/plugins/`); page plugins run in the reader's browser,
+in the WebAssembly module (`wasm/src/plugins/`).
+
+| Key | Default | Kind | Meaning |
+| --- | --- | --- | --- |
+| `bibtex_highlight` | `true` | build | Colours BibTeX entries (type and key, field names, values, punctuation). Copying an entry copies plain text either way. |
+| `minify_css` | `true` | build | Ships the stylesheets without comments or spare whitespace. The sources keep both. |
+| `heading_flow` | `true` | page | Lets the gradient on the name and section labels drift slowly. It holds still for readers who ask for reduced motion. |
+
+The theme switch and copy buttons are page plugins too, always present (the
+switch follows `[features] theme_toggle`).
+
 ## `[theme]`
 
 Overrides for the CSS custom properties in
@@ -232,7 +249,7 @@ Overrides for the CSS custom properties in
 
 ```toml
 [theme]
-light = { accent = "#9b2226", highlight = "#f4c7c3" }
+light = { accent = "#9b2226", accent-2 = "#2f6f4e" }
 dark  = { accent = "#f0a3a0" }
 ```
 
@@ -240,20 +257,19 @@ The properties most worth changing:
 
 | Property | Role |
 | --- | --- |
-| `paper`, `paper-raised` | Background, and boxes such as the BibTeX entry. |
+| `paper`, `paper-raised` | Background, and the slightly raised ground behind controls. |
 | `ink`, `body`, `muted` | Headings, running text, metadata. |
-| `rule`, `rule-strong` | Hairlines and borders. |
-| `accent`, `accent-hover` | Links and controls. |
+| `rule`, `rule-strong` | Faint lines. |
+| `accent`, `accent-hover` | Links, section labels, separators, the callout's line, and the name's gradient. |
+| `accent-2` | The second accent: BibTeX field names, and the far end of the labels' gradient. |
 | `accent-quiet` | Text selection. |
-| `highlight` | The highlighter; also colours the generated favicon. |
-| `link-wash`, `link-wash-hover` | The colour of the mark on prose links (use a translucent colour). |
-| `link-mark` | Its shape, as a CSS gradient: a band behind the lower half of the word. `none` in the dark theme. |
-| `serif`, `mono` | Font stacks. |
+| `highlight` | Colours the generated favicon. |
+| `link-mark`, `link-sweep` | An optional stroke behind prose links and a sweep on hover, as CSS gradients; `none` by default. |
+| `sans`, `mono`, `mono-address`, `serif` | Font stacks: the page, BibTeX, the email address, mathematics. |
 | `gutter` | Side margin on small screens. |
-| `portrait-radius`, `portrait-shape` | Round by default, with the text following the curve. For a square portrait set `portrait-radius = "2px"` and `portrait-shape = "none"`. |
-| `portrait-size`, `portrait-filter` | The portrait's width, and its CSS filter. |
+| `portrait-mask`, `portrait-shape` | The portrait's shape (a squircle, as an SVG mask) and the outline text wraps to beside a captioned portrait. |
+| `portrait-size`, `portrait-filter` | The portrait's width in the title block, and its CSS filter. |
 | `measure` | The column's width. |
-| `link-sweep`, `link-hover-line` | The hover stroke drawn across a link, and the hover underline (dark theme). |
 
 Check new colours against both grounds: every default clears WCAG AA.
 

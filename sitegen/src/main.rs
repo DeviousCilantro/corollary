@@ -14,6 +14,8 @@
 //! - [`markdown`]     Markdown, LaTeX -> MathML, and base-path-aware URLs
 //! - [`images`]       portrait dimensions
 //! - [`seo`]          JSON-LD, sitemap, robots.txt, favicon
+//! - [`plugins`]      switchable features: build plugins, and the names of
+//!                    those that run in the page
 //! - [`render`]       Tera, the section pipeline, and file output
 //!
 //! Usage: `sitegen [--base-url URL]`. See README.md.
@@ -22,6 +24,7 @@ mod bibtex;
 mod config;
 mod images;
 mod markdown;
+mod plugins;
 mod publications;
 mod render;
 mod seo;
@@ -56,7 +59,12 @@ fn main() -> Result<()> {
         &colour("highlight", "#ffd43b"),
     );
 
-    let data = build_render_data(raw, &root, base_url, base_path)?;
+    let plugins = plugins::Plugins::new(&raw.plugins, &raw.features);
+    let mut data = build_render_data(raw, &root, base_url, base_path)?;
+    plugins.process_publications(&mut data.research);
+    plugins.process_publications(&mut data.publications);
+    plugins.process_publications(&mut data.manuscripts);
+    data.runtime_plugins = plugins.runtime_list();
     let public_dir = root.join("public");
 
     if public_dir.exists() {
@@ -68,6 +76,9 @@ fn main() -> Result<()> {
 
     render::copy_dir(&root.join("static"), &public_dir)?;
     copy_wasm(&root.join("wasm/pkg"), &public_dir.join("assets/wasm"))?;
+    // Before the pages are rendered, so the fingerprints in their URLs are of
+    // the files as finally served.
+    plugins.process_assets(&public_dir)?;
     // Tells GitHub Pages not to run Jekyll over the output.
     fs::write(public_dir.join(".nojekyll"), "")?;
     if root.join("CNAME").exists() {
@@ -223,6 +234,7 @@ fn build_render_data(
         labels,
         theme,
         features,
+        plugins: _,
         people,
         sections: _,
         mut publications,
@@ -283,6 +295,7 @@ fn build_render_data(
             base_path,
         },
         person,
+        research: sorted.all,
         publications: sorted.published,
         manuscripts: sorted.manuscripts,
         authors_alphabetical: sorted.authors_alphabetical,
@@ -291,6 +304,7 @@ fn build_render_data(
         teaching,
         service,
         features,
+        runtime_plugins: String::new(),
         theme_css: render::theme_css(&theme)?,
         has_custom_css: root.join("static/assets/css/custom.css").exists(),
         json_ld,

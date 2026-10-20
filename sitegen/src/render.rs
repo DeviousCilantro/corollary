@@ -41,6 +41,8 @@ pub struct RenderData {
     pub site: SiteView,
     pub person: Person,
     pub intro_html: String,
+    /// All work, published and in flight, in one order (the Research section).
+    pub research: Vec<PublicationView>,
     /// Accepted and posted work.
     pub publications: Vec<PublicationView>,
     /// Work under submission or in preparation.
@@ -52,6 +54,8 @@ pub struct RenderData {
     pub teaching: Vec<Teaching>,
     pub service: Vec<Service>,
     pub features: Features,
+    /// The runtime plugins to install, for `<html data-plugins="…">`.
+    pub runtime_plugins: String,
     /// Inline `<style>` body built from `[theme]`; empty when nothing is set.
     pub theme_css: String,
     /// Whether `static/assets/css/custom.css` exists and should be linked.
@@ -129,6 +133,7 @@ pub fn tera(root: &Path, base_path: &str, public_dir: &Path) -> Result<Tera> {
 /// introduction has none; a custom section has none unless given one.
 fn default_title(kind: &str) -> &'static str {
     match kind {
+        "research" => "Research",
         "publications" => "Publications",
         "manuscripts" => "Manuscripts",
         "talks" => "Talks",

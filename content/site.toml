@@ -92,12 +92,13 @@ theme_toggle = true         # the light/dark switch in the top corner
 # -----------------------------------------------------------------------------
 #  Page layout: which sections appear, and in what order.
 #
-#  Delete this whole block to get the default: about, publications,
-#  manuscripts, talks, teaching, service. A section with nothing in it is left
-#  off the page automatically. `title` overrides a heading ("" hides it).
+#  Delete this whole block to get the default: about, research, talks,
+#  teaching, service. A section with nothing in it is left off the page
+#  automatically. `title` overrides a heading ("" hides it).
 #
-#  `kind` selects templates/sections/<kind>.html. Built in: about,
-#  publications, manuscripts, talks, teaching, service, list, markdown.
+#  `kind` selects templates/sections/<kind>.html. Built in: about, research,
+#  talks, teaching, service, list, markdown; and publications and manuscripts,
+#  to list published work and work in flight separately instead of together.
 #  Add your own by creating a new template — see docs/CUSTOMIZING.md.
 # -----------------------------------------------------------------------------
 
@@ -105,10 +106,7 @@ theme_toggle = true         # the light/dark switch in the top corner
 kind = "about"
 
 [[sections]]
-kind = "publications"
-
-[[sections]]
-kind = "manuscripts"
+kind = "research"
 
 [[sections]]
 kind = "talks"
@@ -157,9 +155,12 @@ Outside research I run the department's reading group on [lattices](https://exam
 "Dave Dunmore" = "https://example.org/dave-dunmore"
 
 # =============================================================================
-#  PUBLICATIONS AND MANUSCRIPTS
+#  RESEARCH
 #
-#  `status` decides the section a paper lands in:
+#  Every paper, published or in flight, is listed together under Research;
+#  `status` decides how its venue line reads ("CRYPTO 2026", "Preprint, 2025",
+#  "In submission, 2026"). The "publications" and "manuscripts" section kinds
+#  split them by status instead:
 #    accepted, preprint          -> Publications
 #    submission, inpreparation   -> Manuscripts (hidden while empty)
 #
@@ -254,3 +255,13 @@ venues = [
   { name = "EXAMPLECRYPT", year = 2026, url = "https://example.org/" },
   { name = "TCC-Example", year = 2025 },
 ]
+
+# -----------------------------------------------------------------------------
+#  Plugins: each self-contained feature, on unless switched off here.
+#  bibtex_highlight and minify_css run at build time; heading_flow runs in the
+#  page, in the WebAssembly module. See docs/CONFIGURATION.md.
+# -----------------------------------------------------------------------------
+# [plugins]
+# bibtex_highlight = true   # colour BibTeX entries
+# minify_css = true         # ship the stylesheets without comments
+# heading_flow = true       # let the headings' gradient drift slowly

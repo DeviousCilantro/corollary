@@ -1,7 +1,7 @@
 [package]
 name = "site-wasm"
 version = "1.0.0"
-description = "Corollary: theme toggle and copy buttons"
+description = "Corollary: theme toggle, copy buttons and the flowing heading gradient, as plugins"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
@@ -30,6 +30,7 @@ wasm-bindgen = "0.2"
 version = "0.3"
 features = [
   "Clipboard",
+  "CssStyleDeclaration",
   "Document",
   "DomTokenList",
   "Element",

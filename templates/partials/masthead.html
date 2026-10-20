@@ -28,7 +28,20 @@
     {%- if data.person.links | length > 0 %}
     <p class="contact-links">
       {%- for link in data.person.links %}
+      {#- A profile the page recognises is shown as its glyph (see
+          .icon-link in site.css), its name kept for screen readers. #}
+      {%- set icon = "" %}
+      {%- if link.url is containing("scholar.google.") %}{% set icon = "scholar" %}
+      {%- elif link.url is containing("orcid.org") %}{% set icon = "orcid" %}
+      {%- elif link.url is containing("github.com") %}{% set icon = "github" %}
+      {%- elif link.url is containing("dblp.") %}{% set icon = "dblp" %}
+      {%- elif link.url is containing("arxiv.org") %}{% set icon = "arxiv" %}
+      {%- endif %}
+      {%- if icon %}
+      <a class="icon-link" data-icon="{{ icon }}" href="{{ link.url | url }}" title="{{ link.label }}"><span class="visually-hidden">{{ link.label }}</span></a>
+      {%- else %}
       <a href="{{ link.url | url }}">{{ link.label }}</a>
+      {%- endif %}
       {%- endfor %}
     </p>
     {%- endif %}

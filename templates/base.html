@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="{{ data.site.lang }}">
+{#- data-plugins names the runtime plugins the WebAssembly module installs
+    (set by [plugins] in content/site.toml). #}
+<html lang="{{ data.site.lang }}" data-plugins="{{ data.runtime_plugins }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,8 +11,14 @@
   <meta name="description" content="{{ data.site.description }}">
   <link rel="canonical" href="{{ data.site.base_url }}{% block canonical_path %}/{% endblock canonical_path %}">
   <link rel="icon" href="{{ "/favicon.svg" | url }}" type="image/svg+xml">
+  {#- The text face is needed for the first paint, so it is fetched alongside
+      the stylesheets rather than after them. Its URL must match the one in
+      theme.css exactly; change both together. #}
+  <link rel="preload" href="{{ "/assets/fonts/be-vietnam-pro-regular-latin.woff2" | url }}" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="{{ "/assets/css/theme.css" | asset }}">
   <link rel="stylesheet" href="{{ "/assets/css/site.css" | asset }}">
+  {#- The behaviour module, fetched early; it runs at the end of <body>. #}
+  <link rel="modulepreload" href="{{ "/assets/wasm/site_wasm.js" | asset }}">
   {%- if data.has_custom_css %}
   <link rel="stylesheet" href="{{ "/assets/css/custom.css" | asset }}">
   {%- endif %}

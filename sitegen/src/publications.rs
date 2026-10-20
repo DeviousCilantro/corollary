@@ -34,7 +34,7 @@ impl Status {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct PublicationView {
     /// Stable slug, used for the anchor and to tie the BibTeX block to its button.
     pub id: String,
@@ -49,10 +49,13 @@ pub struct PublicationView {
     pub year: i64,
     pub links: Vec<Link>,
     pub bibtex: Option<String>,
+    /// The same entry as highlighted HTML, filled in by the `bibtex_highlight`
+    /// plugin; when it is off the template shows the plain entry.
+    pub bibtex_html: Option<String>,
     pub abstract_html: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct AuthorView {
     pub name: String,
     /// `None` for the site owner: a self-link on one's own homepage is noise.
@@ -61,6 +64,9 @@ pub struct AuthorView {
 }
 
 pub struct Sorted {
+    /// Every entry, published or not, in the one order: newest year first,
+    /// and within a year accepted, preprint, submission, in preparation.
+    pub all: Vec<PublicationView>,
     pub published: Vec<PublicationView>,
     pub manuscripts: Vec<PublicationView>,
     /// True when every multi-author paper lists its authors alphabetically, so
@@ -107,6 +113,7 @@ pub fn build(ordered: &[PublicationInput], settings: &Settings) -> Result<Sorted
 
     let mut used_keys = HashSet::new();
     let mut used_ids = HashSet::new();
+    let mut all = Vec::new();
     let mut published = Vec::new();
     let mut manuscripts = Vec::new();
     for input in ordered {
@@ -119,13 +126,14 @@ pub fn build(ordered: &[PublicationInput], settings: &Settings) -> Result<Sorted
             view.id = format!("{base}-{n}");
             n += 1;
         }
+        all.push(view.clone());
         if Status::parse(&input.status).is_some_and(Status::is_published) {
             published.push(view);
         } else {
             manuscripts.push(view);
         }
     }
-    Ok(Sorted { published, manuscripts, authors_alphabetical })
+    Ok(Sorted { all, published, manuscripts, authors_alphabetical })
 }
 
 fn build_one(
@@ -198,6 +206,7 @@ fn build_one(
         },
         year,
         links,
+        bibtex_html: None,
         bibtex,
         abstract_html: input.abstract_text.as_deref().map(|a| markdown::to_html(a, settings.base_path)),
     })
@@ -277,6 +286,24 @@ mod tests {
         let sorted = build(&[paper(2026), paper(2024)], &settings).unwrap();
         let ids: Vec<_> = sorted.published.iter().map(|p| p.id.as_str()).collect();
         assert_eq!(ids, ["same-title", "same-title-2"]);
+    }
+
+    #[test]
+    fn research_interleaves_manuscripts_and_papers_by_year() {
+        let settings_people = BTreeMap::new();
+        let bibtex = BibtexConfig::default();
+        let labels = Labels::default();
+        let settings = Settings { people: &settings_people, owner: "", bibtex: &bibtex, labels: &labels, base_path: "" };
+        let mut inputs = vec![
+            PublicationInput { title: "Old Paper".into(), year: 2024, status: "accepted".into(), venue: Some("V".into()), ..Default::default() },
+            PublicationInput { title: "New Draft".into(), year: 2026, status: "submission".into(), ..Default::default() },
+        ];
+        sort(&mut inputs).unwrap();
+        let sorted = build(&inputs, &settings).unwrap();
+        let ids: Vec<_> = sorted.all.iter().map(|p| p.id.as_str()).collect();
+        assert_eq!(ids, ["new-draft", "old-paper"]);
+        assert_eq!(sorted.published.len(), 1);
+        assert_eq!(sorted.manuscripts.len(), 1);
     }
 
     #[test]

@@ -1,18 +1,24 @@
-{#- Entries from [[service]]: one row per role, its venues after it, newest
-    year first. -#}
+{#- Entries from [[service]]: one per role, its venues beneath it grouped by
+    year, newest first (the generator sorts them), so each year is written
+    once rather than after every venue. -#}
 {%- if data.service | length > 0 %}
 <ul class="entries entries-compact">
   {%- for item in data.service %}
   <li class="entry service-entry">
     <span class="service-role">{{ item.role }}</span>
-    <p class="service-venues">
-      {%- for venue in item.venues -%}
-      {#- A non-breaking space keeps a venue and its year on one line. -#}
-      {%- if venue.url %}<a href="{{ venue.url | url }}">{{ venue.name }}{% if venue.year %}&nbsp;{{ venue.year }}{% endif %}</a>
-      {%- else %}{{ venue.name }}{% if venue.year %}&nbsp;{{ venue.year }}{% endif %}{% endif -%}
-      {%- if not loop.last %}, {% endif -%}
-      {%- endfor -%}
-    </p>
+    <dl class="service-years">
+      {%- set_global prev = "__start__" %}
+      {%- for venue in item.venues %}
+      {%- if venue.year %}{% set year = venue.year %}{% else %}{% set year = "" %}{% endif %}
+      {%- if year != prev %}
+      {%- if not loop.first %}</dd></div>{% endif %}
+      <div class="service-year"><dt>{{ year }}</dt><dd>
+      {%- set_global prev = year %}
+      {%- endif %}
+      <span class="service-venue">{% if venue.url %}<a href="{{ venue.url | url }}">{{ venue.name }}</a>{% else %}{{ venue.name }}{% endif %}</span>
+      {%- endfor %}
+      </dd></div>
+    </dl>
   </li>
   {%- endfor %}
 </ul>

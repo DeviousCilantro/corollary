@@ -28,7 +28,7 @@
       <details class="bibtex">
         <summary>BibTeX</summary>
         <div class="bibtex-body">
-          <pre id="bib-{{ item.id }}"><code>{{ item.bibtex }}</code></pre>
+          <pre id="bib-{{ item.id }}"><code>{% if item.bibtex_html %}{{ item.bibtex_html | safe }}{% else %}{{ item.bibtex }}{% endif %}</code></pre>
           <button class="ghost-button" type="button"
                   data-copy-target="#bib-{{ item.id }}" data-copy-done="copied"
                   aria-label="Copy BibTeX entry">copy</button>

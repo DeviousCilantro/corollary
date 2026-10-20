@@ -1,15 +1,13 @@
 /* ===========================================================================
    site.css — layout.
 
-   One column, the width of a printed text block, with everything hung from a
-   single left edge: the name as the title, the introduction wrapping around a
-   round portrait,
-   sections under small-caps heads with a hairline running out to the right
-   margin, and a short footer.
+   One column with everything hung from a single left edge: the name and a
+   squircle portrait as the title block, the introduction with its closing
+   callout, then the sections; on a wide screen each section's label hangs in
+   a column of its own to the left, in the accent. No boxes or rules: the
+   structure is carried by that edge, the accent and whitespace alone.
 
-   One text face, Literata, with a monospace kept for BibTeX alone. No cards,
-   no shadows, no icons beyond the theme switch: structure is carried by type
-   and whitespace alone.
+   One text face, with a monospace for the address and another for BibTeX.
 
    Colours, fonts and widths are custom properties defined in theme.css. For
    small additions, prefer static/assets/css/custom.css, which loads last.
@@ -29,15 +27,15 @@
 }
 
 html {
-  font-family: var(--serif);
+  font-family: var(--sans);
   /* Relative, never absolute, so a reader who has raised their browser's text
      size is obeyed: 17px for anyone who has not. On large screens the type
      grows with the window, to 20px, so the column keeps the proportion of a
      printed page instead of shrinking into a strip between two empty
      margins. Every length on the page is in rem, so the whole composition
      scales together. */
-  font-size: clamp(106.25%, 62.5% + 0.55vw, 125%);
-  line-height: 1.62;
+  font-size: clamp(100%, 60% + 0.5vw, 115%);
+  line-height: 1.65;
   /* Safari on iOS otherwise resizes body text of its own accord whenever a
      block's width changes, e.g. when a BibTeX disclosure opens. */
   -webkit-text-size-adjust: 100%;
@@ -92,16 +90,15 @@ h3 {
   text-wrap: balance;
 }
 
+/* No link is underlined: colour alone marks a link, and the eye is never
+   pulled across a page of rules. */
 a {
   color: var(--accent);
-  text-decoration-color: color-mix(in srgb, var(--accent) 38%, transparent);
-  text-decoration-thickness: 0.055em;
-  text-underline-offset: 0.18em;
+  text-decoration: none;
 }
 
 a:hover {
   color: var(--accent-hover);
-  text-decoration-color: currentColor;
 }
 
 a:focus-visible,
@@ -308,11 +305,15 @@ html[data-theme="dark"] .theme-toggle {
   padding: 2.6rem 0 2.1rem;
 }
 
+/* The name in capitals, in the bold sans of the section heads: the same
+   voice, at title size. */
 .title {
-  font-size: clamp(2rem, 1.45rem + 2.2vw, 2.6rem);
-  font-weight: 400;
-  letter-spacing: -0.012em;
-  line-height: 1.1;
+  font-family: var(--sans);
+  font-size: clamp(1.45rem, 1.15rem + 1.2vw, 1.8rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
   overflow-wrap: break-word;
 }
 
@@ -322,9 +323,14 @@ html[data-theme="dark"] .theme-toggle {
   color: var(--body);
 }
 
+/* The address and profiles are quiet, taking the accent only under the
+   pointer: the accent on the page is kept for the links in the text. */
 .contact a {
-  color: inherit;
-  text-decoration-color: color-mix(in srgb, currentColor 28%, transparent);
+  color: var(--body);
+}
+
+.contact .icon-link {
+  color: var(--muted);
 }
 
 .contact a:hover {
@@ -343,6 +349,8 @@ html[data-theme="dark"] .theme-toggle {
 .email {
   min-width: 0;
   overflow-wrap: anywhere;
+  font-family: var(--mono-address);
+  font-size: 0.92em;
 }
 
 .contact-links {
@@ -356,11 +364,82 @@ html[data-theme="dark"] .theme-toggle {
   content: "\00B7";
   display: inline-block;
   margin: 0 0.6rem;
-  color: var(--muted);
-  opacity: 0.6;
+  color: var(--accent);
+  opacity: 0.8;
   /* The dot is not part of the link: no underline, no click target. */
   text-decoration: none;
   pointer-events: none;
+}
+
+/* Profiles the page recognises are shown as small glyphs (Simple Icons, CC0)
+   in the link colour; their names stay in the markup for screen readers and
+   as a tooltip. Any other profile keeps its name as text. */
+.contact-links .icon-link::before {
+  content: "";
+  display: inline-block;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  vertical-align: -0.2em;
+  /* Every glyph in the link's own colour, whatever the separator rule for
+     a following link would give its ::before. */
+  color: inherit;
+  background: currentColor;
+  opacity: 0.9;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.contact-links .icon-link + .icon-link {
+  margin-left: 1rem;
+}
+
+/* On a phone the row is already spaced by its gap. */
+@media (max-width: 34rem) {
+  .contact-links .icon-link + .icon-link {
+    margin-left: 0;
+  }
+}
+
+.contact-links .icon-link:hover::before {
+  opacity: 1;
+}
+
+.icon-link[data-icon="scholar"] { --icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z'/%3E%3C/svg%3E"); }
+.icon-link[data-icon="orcid"] { --icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722h-2.222z'/%3E%3C/svg%3E"); }
+.icon-link[data-icon="github"] { --icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E"); }
+.icon-link[data-icon="dblp"] { --icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3.075.002c-.096.013-.154.092-.094.31L4.97 7.73 3.1 8.6s-.56.26-.4.85l2.45 9.159s.16.59.72.33l6.169-2.869 1.3-.61s.52-.24.42-.79l-.01-.06-1.13-4.22-.658-2.45-.672-2.49v-.04s-.16-.59-.84-1L3.5.141s-.265-.16-.425-.139zM18.324 5.03a.724.724 0 0 0-.193.06l-5.602 2.6.862 3.2 1.09 4.08.01.06c.05.47-.411.79-.411.79l-1.88.87.5 1.89.04.1c.07.17.28.6.81.91l6.95 4.269s.68.41.52-.17l-1.981-7.4 1.861-.86s.56-.26.4-.85L18.85 5.42s-.116-.452-.526-.39z'/%3E%3C/svg%3E"); }
+.icon-link[data-icon="arxiv"] { --icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3.8423 0a1.0037 1.0037 0 0 0-.922.6078c-.1536.3687-.0438.6275.2938 1.1113l6.9185 8.3597-1.0223 1.1058a1.0393 1.0393 0 0 0 .003 1.4229l1.2292 1.3135-5.4391 6.4444c-.2803.299-.4538.823-.2971 1.1986a1.0253 1.0253 0 0 0 .9585.635.9133.9133 0 0 0 .6891-.3405l5.783-6.126 7.4902 8.0051a.8527.8527 0 0 0 .6835.2597.9575.9575 0 0 0 .8777-.6138c.1577-.377-.017-.7502-.306-1.1407l-7.0518-8.3418 1.0632-1.13a.9626.9626 0 0 0 .0089-1.3165L4.6336.4639s-.3733-.4535-.768-.463zm0 .272h.0166c.2179.0052.4874.2715.5644.3639l.005.006.0052.0055 10.169 10.9905a.6915.6915 0 0 1-.0072.945l-1.0666 1.133-1.4982-1.7724-8.5994-10.39c-.3286-.472-.352-.6183-.2592-.841a.7307.7307 0 0 1 .6704-.4401Zm14.341 1.5701a.877.877 0 0 0-.6554.2418l-5.6962 6.1584 1.6944 1.8319 5.3089-6.5138c.3251-.4335.479-.6603.3247-1.0292a1.1205 1.1205 0 0 0-.9763-.689zm-7.6557 12.2823 1.3186 1.4135-5.7864 6.1295a.6494.6494 0 0 1-.4959.26.7516.7516 0 0 1-.706-.4669c-.1119-.2682.0359-.6864.2442-.9083l.0051-.0055.0047-.0055z'/%3E%3C/svg%3E"); }
+
+/* The headings (the name and the section labels) are written in a gradient
+   that flows. Each gradient is twice its heading's width and runs from one
+   colour to another and back; --flow (0% to 100%) slides it along, so at rest
+   the heading shows the first half and in motion the colours drift across the
+   letters. The flow plugin (wasm/src/plugins/flow.rs) moves --flow; without
+   it, or for a reader who asks for reduced motion, the gradient holds still.
+   A browser without background-clip: text keeps the plain colour set above. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .title,
+  .section-title {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    background-position: var(--flow, 0%) 50%;
+    width: fit-content;
+  }
+
+  /* The name: ink running into the accent, and back. */
+  .title {
+    background-image: linear-gradient(100deg,
+      var(--ink) 4%, var(--accent) 48%, var(--ink) 96%);
+  }
+
+  /* The labels: the slate-blue accent running into the teal, and back. */
+  .section-title {
+    background-image: linear-gradient(100deg,
+      var(--accent) 0%, var(--accent-2) 50%, var(--accent) 100%);
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -377,11 +456,9 @@ html[data-theme="dark"] .theme-toggle {
   margin: 0.35rem 0 0.8rem 1.6rem;
 }
 
-/* The text follows the curve of a round portrait rather than the square box
-   around it. Tied to a token, so a square portrait (see theme.css) switches
-   it off, and never applied under a caption, which would distort the shape.
-   The margin is generous enough that a line running beneath the curve does
-   not brush against it. */
+/* The text follows the portrait's rounded outline rather than its square
+   box (--portrait-shape in theme.css), never under a caption, which would
+   distort the shape. The margin keeps a line running beneath it clear. */
 .portrait-figure:not(.has-caption) {
   shape-outside: var(--portrait-shape);
   shape-margin: 1.45rem;
@@ -391,19 +468,54 @@ html[data-theme="dark"] .theme-toggle {
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: var(--portrait-radius);
   background: var(--paper-raised);
-  /* A hairline frame, and colour held a little back, so the photograph sits
-     in the page rather than on it. */
-  box-shadow: 0 0 0 1px var(--rule);
+  -webkit-mask: var(--portrait-mask) center / 100% 100% no-repeat;
+  mask: var(--portrait-mask) center / 100% 100% no-repeat;
   filter: var(--portrait-filter);
+}
+
+/* The portrait in the title block, at every width: beside the name and the
+   address on a wide screen, its top level with the name and its foot with the
+   profiles; on a phone, beneath the name (see the narrow-screen rules). The
+   introduction's copy is then hidden, and the introduction runs full width.
+   The image is hidden by an inline style in the markup (see masthead.html),
+   which only the rule here overrides, so an older cached stylesheet never
+   shows it. */
+.masthead.has-portrait {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 2rem;
+  align-items: center;
+}
+
+.masthead.has-portrait .title {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.masthead.has-portrait .contact {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.masthead-portrait {
+  display: block !important;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: var(--portrait-size);
+  /* Centred on the text block, then lowered by half this margin, so it
+     meets the visible ink: the name's capitals above, the icons below. */
+  margin-top: 0.45rem;
+}
+
+.masthead.has-portrait ~ .section-about .portrait-figure {
+  display: none;
 }
 
 .portrait-figure figcaption {
   margin-top: 0.45rem;
   font-size: 0.8rem;
   line-height: 1.35;
-  font-style: italic;
   color: var(--muted);
   text-align: center;
 }
@@ -412,12 +524,31 @@ html[data-theme="dark"] .theme-toggle {
   margin-top: 0.8rem;
 }
 
+/* The closing paragraph of a longer introduction (the research interests)
+   is set apart: a fine accent line and a faint wash of the accent behind it.
+   Its own formatting context keeps the wash from running beneath the
+   portrait. */
+.intro > p + p:last-child {
+  display: flow-root;
+  margin-top: 1.1rem;
+  padding: 0.75rem 1.1rem;
+  border-left: 2px solid var(--accent);
+  /* The wash fades out towards the right, so the callout has no hard right
+     edge to run on past where the other paragraphs' ragged lines end. */
+  background: linear-gradient(to right,
+    color-mix(in srgb, var(--accent) 11%, transparent),
+    color-mix(in srgb, var(--accent) 4%, transparent) 60%,
+    transparent);
+  color: var(--ink);
+}
+
 /* ---------------------------------------------------------------------------
-   Prose links: a stroke of highlighter by day, yellow chalk by night
+   Prose links: the accent alone (the --link-mark and --link-sweep tokens can
+   add a stroke behind the word and a sweep on hover; this theme sets none)
    --------------------------------------------------------------------------- */
 
 .prose a {
-  font-weight: 500;
+  font-weight: 400;
   text-decoration: none;
   background-image: var(--link-mark), var(--link-sweep);
   background-size: 100% 100%, 0% 100%;
@@ -427,12 +558,10 @@ html[data-theme="dark"] .theme-toggle {
   box-decoration-break: clone;
 }
 
-/* On hover a second, stronger stroke is drawn across the word, left to right. */
+/* On hover, any sweep the theme defines is drawn across the word. */
 .prose a:hover,
 .prose a:focus-visible {
   background-size: 100% 100%, 100% 100%;
-  text-decoration-line: var(--link-hover-line);
-  text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 /* ---------------------------------------------------------------------------
@@ -452,25 +581,22 @@ html[data-theme="dark"] .theme-toggle {
 .section-title {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  margin-bottom: 1.4rem;
-  font-size: 1.06rem;
-  font-weight: 500;
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.1em;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
 }
 
-.section-title::after {
-  content: "";
-  flex: 1 1 auto;
-  border-top: 1px solid var(--rule);
-}
+
 
 /* The authorship note, when [conventions] author_order is set. */
 .convention {
   margin: -0.3rem 0 1.4rem;
   font-size: 0.92rem;
-  font-style: italic;
   color: var(--muted);
 }
 
@@ -497,10 +623,15 @@ html[data-theme="dark"] .theme-toggle {
 }
 
 .entry-title {
-  font-size: 1.06rem;
-  line-height: 1.32;
+  font-size: 1.04rem;
+  line-height: 1.4;
   font-weight: 500;
   color: var(--ink);
+}
+
+.entry-authors {
+  color: var(--body);
+  font-size: 0.95rem;
 }
 
 .entry-authors,
@@ -523,7 +654,7 @@ html[data-theme="dark"] .theme-toggle {
   padding: 4px;
   margin: calc(0.3rem - 4px) -4px -4px;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
 }
 
 .entry-meta > :not(:first-child),
@@ -535,40 +666,37 @@ html[data-theme="dark"] .theme-toggle {
 .pub-meta > .bibtex > summary::before {
   content: "\00B7";
   position: absolute;
-  left: -0.82rem;
-  color: var(--muted);
-  opacity: 0.55;
+  /* Centred in the gap, whatever the width of the dot's own glyph. */
+  left: -1.3rem;
+  width: 1.3rem;
+  text-align: center;
+  /* The separators carry the accent, threading it through every line. */
+  color: var(--accent);
+  font-weight: 700;
+  opacity: 0.8;
   pointer-events: none;
 }
 
 /* Coauthors, venues and institutions are quiet: they inherit the colour of
-   their line and are underlined only under the pointer, so the eye is not
-   pulled through the list and a row of venues does not read as a row of
-   rules. Actions — ePrint, slides, BibTeX — keep the accent. */
+   their line and take the accent only under the pointer, so the eye is not
+   pulled through the list. Actions — ePrint, slides, BibTeX — keep the
+   accent. */
 .entry-authors a,
 .entry-where a,
 .pub-venue a,
-.service-venues a {
+.service-venue a {
   color: inherit;
-  text-decoration-color: transparent;
 }
 
 .entry-authors a:hover,
 .entry-where a:hover,
 .pub-venue a:hover,
-.service-venues a:hover {
+.service-venue a:hover {
   color: var(--accent);
-  text-decoration-color: currentColor;
-}
-
-.entry-meta > a {
-  color: var(--accent);
-  text-decoration-color: color-mix(in srgb, var(--accent) 34%, transparent);
 }
 
 .pub-venue {
-  font-style: italic;
-  color: var(--ink);
+  color: var(--body);
 }
 
 .entry-date {
@@ -586,20 +714,66 @@ html[data-theme="dark"] .theme-toggle {
   color: var(--ink);
 }
 
-/* Service: the role, then its venues beside it. */
-.service-entry {
-  display: grid;
-  grid-template-columns: 9rem minmax(0, 1fr);
-  column-gap: 1.2rem;
-  align-items: baseline;
-}
-
+/* Service reads like any other entry: the role as its title, the venues
+   beneath it in the smaller, quieter type of a meta line. */
 .service-role {
+  display: block;
+  font-size: 1.04rem;
+  line-height: 1.4;
+  font-weight: 500;
   color: var(--ink);
 }
 
-.service-venues {
+/* The venues, a row per year: the year once, in the quiet figures of a
+   meta line, then that year's venues joined by accent dots. */
+.service-years {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1.1rem;
+  row-gap: 0.2rem;
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
+}
+
+.service-year {
+  display: contents;
+}
+
+.service-year dt {
   color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* As in a meta line: each dot is drawn in the gap before its venue, and the
+   row clips its own left edge, so a wrapped line never opens on a dot. The
+   padding keeps focus rings clear of the clip. */
+.service-year dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1.2rem;
+  row-gap: 0.15rem;
+  overflow: hidden;
+  padding: 4px;
+  margin: -4px;
+  color: var(--body);
+}
+
+.service-venue {
+  position: relative;
+  white-space: nowrap;
+}
+
+.service-venue + .service-venue::before {
+  content: "\00B7";
+  position: absolute;
+  left: -1.2rem;
+  width: 1.2rem;
+  text-align: center;
+  color: var(--accent);
+  font-weight: 700;
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 /* ---------------------------------------------------------------------------
@@ -616,23 +790,31 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+/* A fine chevron after the label, pointing on when closed and turning down
+   when open. */
 summary::after {
-  content: " +";
-  font-family: var(--mono);
-  font-size: 0.82em;
+  content: "";
+  display: inline-block;
+  width: 0.36em;
+  height: 0.36em;
+  margin-left: 0.45em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
   opacity: 0.7;
+  transform: translateY(-0.12em) rotate(-45deg);
 }
 
 details[open] > summary::after {
-  content: " \2212";
+  transform: translateY(-0.25em) rotate(45deg);
 }
 
 summary:hover {
   color: var(--accent-hover);
 }
 
+/* The label sits in its meta line at that line's size. */
 .bibtex {
-  font-size: 0.95rem;
+  font-size: inherit;
 }
 
 /* Opening the disclosure must not move its label. Were the <details> itself
@@ -661,25 +843,48 @@ summary:hover {
   margin-top: 0.45rem;
 }
 
+/* No box: the entry is set off by a fine rule in the accent, as the abstract
+   is. */
 .bibtex-body pre {
   margin: 0;
-  padding: 0.85rem 1rem;
+  padding: 0.2rem 4.5rem 0.2rem 1rem;
   overflow-x: auto;
-  background: var(--paper-raised);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
   color: var(--body);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 /* The box's own ground behind the label, so an entry scrolled sideways
    passes under it rather than through it. */
+/* Syntax colours, from the generator's spans: the entry type and key in the
+   slate-blue accent, field names in the teal second accent, values in the
+   body ink, and the braces, = and commas held back. */
+.bib-type,
+.bib-key {
+  color: var(--accent);
+}
+
+.bib-key {
+  font-weight: 600;
+}
+
+.bib-field {
+  color: var(--accent-2);
+}
+
+.bib-value {
+  color: var(--body);
+}
+
+.bib-punct {
+  color: var(--muted);
+}
+
 .bibtex-body .ghost-button {
   position: absolute;
-  top: 0.45rem;
-  right: 0.45rem;
-  padding: 0 0.35rem;
-  background: var(--paper-raised);
+  top: 0.1rem;
+  right: 0;
+  background: var(--paper);
 }
 
 .abstract {
@@ -689,8 +894,8 @@ summary:hover {
 
 .abstract > .prose {
   margin-top: 0.55rem;
-  padding-left: 0.95rem;
-  border-left: 1px solid var(--rule-strong);
+  padding-left: 1rem;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
   color: var(--muted);
 }
 
@@ -698,21 +903,20 @@ summary:hover {
    Controls
    --------------------------------------------------------------------------- */
 
-/* The copy buttons are set in the page's own type, in the small caps of the
-   section heads, rather than as a boxed chip. */
+/* The copy buttons: a quiet word in the mono of the address beside it, with
+   no frame, taking the accent under the pointer. */
 .ghost-button {
   position: relative;
   appearance: none;
   cursor: pointer;
-  padding: 0 0.15rem;
+  padding: 0 0.1rem;
   border: 0;
   border-radius: 2px;
   background: none;
   color: var(--muted);
-  font-family: var(--serif);
-  font-size: 0.86rem;
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.08em;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
   line-height: 1.5;
 }
 
@@ -734,9 +938,8 @@ summary:hover {
    --------------------------------------------------------------------------- */
 
 .site-footer {
-  margin-top: 3.2rem;
-  padding: 1rem 0 2.4rem;
-  border-top: 1px solid var(--rule);
+  margin-top: 4rem;
+  padding: 0 0 2.4rem;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -746,8 +949,7 @@ summary:hover {
 }
 
 .site-footer a {
-  color: inherit;
-  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+  color: var(--accent);
 }
 
 .site-footer a:hover {
@@ -779,33 +981,20 @@ summary:hover {
     padding: 2.2rem 0 1.9rem;
   }
 
-  /* The column beside a floated portrait is too narrow for prose on a phone,
-     so the portrait moves into the title block: the name across the full
-     width, which keeps it on one line, and the portrait beside the address
-     and profiles beneath it. */
+  /* On a phone the name takes the full width, which keeps it on one line,
+     and the portrait sits beside the address and profiles beneath it. */
   .masthead.has-portrait {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 1rem;
-    align-items: center;
   }
 
   .masthead.has-portrait .title {
     grid-column: 1 / -1;
   }
 
-  /* Hidden by an inline style in the markup (see masthead.html), which only
-     this rule overrides. */
   .masthead-portrait {
-    display: block !important;
-    grid-column: 2;
     grid-row: 2;
     width: 4.75rem;
     margin-top: 0.85rem;
-  }
-
-  .masthead.has-portrait ~ .section-about .portrait-figure {
-    display: none;
   }
 
   /* A captioned portrait stays in the introduction, above it, on the left
@@ -849,9 +1038,40 @@ summary:hover {
     content: none;
   }
 
-  .service-entry {
-    grid-template-columns: 1fr;
-    row-gap: 0.1rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Wide screens: the section names hang in a column of their own to the left,
+   in the accent, and everything else (name, introduction, entries, footer)
+   shares one edge beside them. No rules or boxes; the structure is carried by
+   that edge and the space between sections.
+   --------------------------------------------------------------------------- */
+
+@media (min-width: 62rem) {
+  :root {
+    --label: 8.5rem;
+    --label-gap: 2.5rem;
+    --measure: calc(42rem + var(--label) + var(--label-gap));
+  }
+
+  .masthead,
+  .section,
+  .site-footer,
+  .not-found > .prose {
+    padding-left: calc(var(--label) + var(--label-gap));
+  }
+
+  .section {
+    position: relative;
+    margin-top: 3.4rem;
+  }
+
+  .section-title {
+    position: absolute;
+    left: 0;
+    top: 0.36rem;
+    width: var(--label);
+    margin: 0;
   }
 }
 
@@ -861,7 +1081,11 @@ summary:hover {
   .ghost-button,
   .theme-toggle {
     transition: color 130ms ease, border-color 130ms ease,
-      text-decoration-color 130ms ease;
+      box-shadow 130ms ease;
+  }
+
+  summary::after {
+    transition: transform 200ms ease;
   }
 
   .prose a {

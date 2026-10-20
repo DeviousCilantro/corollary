@@ -5,96 +5,105 @@ sparse content, low visual noise. Not a portfolio, not a blog. These notes
 explain the defaults, so that changing one is a choice rather than an
 accident.
 
-## One column
+## One column, one edge
 
-A homepage has one job — let a visitor establish who you are and what you have
-written — and one column, read top to bottom, does it with no navigation at
-all. The column is the width of a printed text block, about 70 characters,
-centred on the screen, and nothing hangs outside it: margins stay even on both
-sides.
+A homepage has one job (let a visitor establish who you are and what you have
+written) and one column, read top to bottom, does it with no navigation at
+all. Everything hangs from a single left edge: the name, the introduction,
+every entry, the footer.
 
-Inside it, everything hangs from a single left edge. Ragged-right text gives a
-column only one firm edge, and a centred heading over it floats with nothing
-to anchor it; left-aligned heads, each followed by a hairline running out to
-the right margin, keep the axis and carry the eye across, so the right side of
-the column never reads as empty.
+On a wide screen each section's label hangs in a column of its own to the
+left of that edge, small capitals in the accent, level with the section's
+first entry. The labels mark the structure without a rule or a box: the edge,
+the accent and whitespace carry it. On a narrower screen the labels sit above
+their sections.
 
-On large screens the type grows with the window, up to 20px, so the column
-keeps the proportion of a printed page instead of shrinking into a strip
-between two empty margins.
-
-The page opens with the name as the title — the theme switch alone in the
-corner above it — then the contact line, and the introduction. The portrait is round, and the text follows
-its curve rather than the square box around it: the one soft shape on a page
-of straight lines. On a phone, where the column beside it would be too narrow
-for prose, it joins the title block instead, beside the address and profiles. A one-line footer closes the page.
+The page opens with the name and, beside it, the portrait: a squircle (a
+superellipse, the shape between a circle and a square), its top level with the
+name's capitals and its foot with the profile icons. Then the introduction,
+whose closing paragraph (the research interests, usually) is set apart with a
+fine accent line and a wash of the accent that fades out to the right, so it
+has no hard edge to overrun the ragged lines above it. A one-line footer closes
+the page.
 
 ## Typography
 
-One text face, Literata, chosen because it carries the two features the page
-relies on and most platform serifs lack: true small caps and old-style
-figures. A monospace is kept for BibTeX only.
+One sans text face, Be Vietnam Pro, in three weights: regular for text, medium
+for titles, semibold for the name and the section labels. Two monospaces with
+one job each: DM Mono for the email address, Azeret Mono for BibTeX, whose
+columns want to line up. All three are served from the site itself.
 
-- **Small caps** for the section heads, letter-spaced, and the copy buttons.
-- **Old-style figures** throughout the prose: a year in a sentence is a word,
-  not a measurement. Code is exempt; a BibTeX year wants to line up.
-- **Italic** for the venue of a paper and the authorship note.
+- **Capitals**, letter-spaced, for the name and the section labels.
+- **Hierarchy by weight and colour**, not size: a title in ink, its authors a
+  step quieter, its venue, date and links quieter still.
+- No italics, no underlines. A link is marked by the accent alone.
 
-Structure comes from type and whitespace alone. There are no cards, no
-shadows, no rounded panels, no icons other than the theme switch.
+## Colour: one accent, and a second for code
 
-## Colour: paper and blackboard
+Slate blue (#6a5acd) is the page's only colour. Links, section labels, the
+separators in each meta line and the callout's line all take it; everything
+else is ink and greys on a cool, neutral ground, so the accent is never
+competing. Teal is a second accent with a single use: the field names of a
+highlighted BibTeX entry.
 
-The two surfaces theory is actually done on.
+The light theme is near-black ink on a cool grey paper. The dark theme is slate
+blue darkened to a soft near-black, deliberately not the pure black of an OLED
+theme, with links in a lighter slate blue.
 
-In the light theme the page is ivory paper written in blue-black fountain-pen
-ink, and links are marked the way one marks up a paper while reading it — a
-stroke of yellow highlighter behind the lower half of the word. On hover a
-second, stronger stroke sweeps across the word, left to right, as a pen would.
-Selected text takes the same yellow.
+The headings carry a gradient, the name from ink into the accent, the labels
+from the accent into the teal, and it flows: the colours drift slowly back and
+forth across the letters (see Plugins, below). It holds still for a reader who
+asks for reduced motion, and in any browser without the module.
 
-In the dark theme the page is a slate blackboard. There is no highlighter on a
-blackboard: links are simply written in yellow chalk, with no mark at rest. A
-translucent yellow under them on slate only muddies to olive, and a yellow line
-under them looks like an error underline; chalk on its own is cleaner.
-
-So the yellow is the constant — the highlighter by day, the chalk by night —
-and the page keeps its character across the toggle. Photographs are held back
-a little in both themes, more on the blackboard, so they sit in the page rather
-than on it.
-
-Contrast is deliberately short of the maximum. Near-white on near-black glares;
-headings sit near 15:1 and body text near 10:1, roughly where print sits. Every
-text colour clears WCAG AA against its own ground.
-
-Metadata links — coauthors, venues, institutions — inherit their line's colour
-and are underlined only under the pointer, so the eye is not pulled through
-the lists. Actions — ePrint,
-slides, BibTeX — keep the accent.
+Contrast is deliberately short of the maximum. Headings sit near 15:1 and body
+text near 10:1; every text colour clears WCAG AA against its own ground.
+Metadata links (coauthors, venues, institutions) inherit their line's colour
+and take the accent only under the pointer; actions (ePrint, arXiv, slides,
+BibTeX) keep it.
 
 ## Details that do work
 
 - Separators in a meta line are drawn by the stylesheet and clipped at the
   start of a line, so a wrapped line never opens on a stray dot; a venue and
   its year never part.
-- Opening a BibTeX entry never moves its label.
+- Service venues are grouped by year: each year is written once, its venues
+  after it, rather than a year after every venue.
+- Profiles the page recognises (Google Scholar, ORCID, GitHub, DBLP, arXiv)
+  are shown as small glyphs, their names kept for screen readers.
+- Opening a BibTeX entry never moves its label; copying it copies exactly the
+  entry, whatever colours it is drawn in.
 - Copy buttons say "copied" only when the clipboard has the text; otherwise
   they select it and name the shortcut.
 - Stylesheet and script URLs carry a fingerprint of their contents, so a
   browser never pairs a new page with a stylesheet or script it cached from an
   older one.
 
+## Plugins
+
+Each self-contained feature is a plugin, switched in `[plugins]` of
+content/site.toml and on by default.
+
+- **Build plugins** run in the Rust generator (`sitegen/src/plugins/`):
+  `bibtex_highlight` colours BibTeX entries into spans, and `minify_css`
+  strips the shipped stylesheets of comments and spare whitespace while the
+  sources keep their documentation.
+- **Runtime plugins** run in the reader's browser, in the Rust WebAssembly
+  module (`wasm/src/plugins/`): `theme` (the switch), `clipboard` (the copy
+  buttons) and `flow` (the drifting gradient). The generator names the enabled
+  ones in the page, and the module installs only those.
+
 ## Rendering
 
 Everything is rendered by the Rust generator at build time, including LaTeX,
-which becomes MathML. The page ships no maths engine and makes no third-party
-request of any kind.
+which becomes MathML, and BibTeX highlighting. The page ships no maths engine
+and makes no third-party request of any kind.
 
-The WebAssembly module handles only what genuinely depends on the reader: their
-colour theme and their clipboard. One small inline script applies a stored
-theme before first paint, because WebAssembly is instantiated asynchronously
-and a reader who chose dark would otherwise see a flash of light. If the module
-fails to load, nothing is lost but the toggle and the copy buttons.
+The WebAssembly module handles only what depends on the reader being present:
+their colour theme, their clipboard, and the motion of the gradient. One small
+inline script applies a stored theme before first paint, because WebAssembly
+is instantiated asynchronously and a reader who chose dark would otherwise see
+a flash of light. If the module fails to load, nothing is lost but the toggle,
+the copy buttons and the motion.
 
 ## Content
 
